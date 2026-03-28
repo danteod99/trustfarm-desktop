@@ -1,0 +1,76 @@
+{
+  "name": "trustfarm-desktop",
+  "version": "1.0.0",
+  "description": "TrustFarm — Phone Farm Manager with Screen Mirroring & Automation",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "concurrently \"npm run dev:renderer\" \"wait-on http://localhost:5174 && electron .\"",
+    "dev:renderer": "vite",
+    "build:renderer": "vite build",
+    "rebuild": "node-gyp rebuild --target=35.7.5 --arch=arm64 --dist-url=https://electronjs.org/headers --directory=node_modules/better-sqlite3 --build-from-source",
+    "postinstall": "npm run rebuild",
+    "build": "vite build && electron-builder",
+    "pack": "vite build && electron-builder --dir"
+  },
+  "author": "TrustFarm",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.1.2",
+    "electron": "^35.1.2",
+    "electron-builder": "^26.0.12",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.3.5",
+    "wait-on": "^8.0.3"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.9.1",
+    "imapflow": "^1.2.18",
+    "lucide-react": "^0.577.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "uuid": "^11.1.0"
+  },
+  "build": {
+    "appId": "com.trustfarm.desktop",
+    "productName": "TrustFarm",
+    "files": [
+      "main.js",
+      "preload.js",
+      "dist/**/*",
+      "src/db/**/*",
+      "src/devices/**/*",
+      "src/automation/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "bin/mac",
+        "to": "bin/mac",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "bin/win",
+        "to": "bin/win",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    }
+  }
+}
