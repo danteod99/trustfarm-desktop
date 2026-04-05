@@ -1,0 +1,161 @@
+{
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist"
+  },
+  "package": {
+    "productName": "TikFarm",
+    "version": "2.12.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "protocol": {
+        "all": false,
+        "asset": true,
+        "assetScope": [
+          "$APPDATA/upload/**"
+        ]
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": true,
+        "show": true,
+        "maximize": true,
+        "minimize": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "startDragging": true,
+        "create": true,
+        "center": true,
+        "print": false,
+        "requestUserAttention": false,
+        "setAlwaysOnTop": false,
+        "setClosable": false,
+        "setContentProtected": false,
+        "setCursorGrab": false,
+        "setCursorIcon": false,
+        "setCursorPosition": false,
+        "setCursorVisible": false,
+        "setDecorations": false,
+        "setFocus": false,
+        "setFullscreen": false,
+        "setIcon": false,
+        "setIgnoreCursorEvents": false,
+        "setMaxSize": false,
+        "setMaximizable": false,
+        "setMinSize": false,
+        "setMinimizable": false,
+        "setPosition": false,
+        "setResizable": false,
+        "setSize": false,
+        "setSkipTaskbar": false,
+        "setTitle": false
+      },
+      "dialog": {
+        "all": true,
+        "ask": true,
+        "confirm": true,
+        "message": true,
+        "open": true,
+        "save": true
+      },
+      "shell": {
+        "all": false,
+        "open": true,
+        "sidecar": true,
+        "execute": true,
+        "scope": [
+          {
+            "name": "start-agent",
+            "cmd": "$APPDATA/bin/agent",
+            "args": []
+          }
+        ]
+      },
+      "app": {
+        "all": true,
+        "show": true,
+        "hide": true
+      },
+      "os": {
+        "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": [
+          "**",
+          "**/*",
+          "/**/*"
+        ]
+      },
+      "path": {
+        "all": true
+      },
+      "clipboard": {
+        "all": true,
+        "writeText": true,
+        "readText": true
+      },
+      "globalShortcut": {
+        "all": true
+      },
+      "notification": {
+        "all": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "http://localhost:50809/*/*",
+          "http://localhost:8787/*/*",
+          "https://api.niostack.com/*/*"
+        ]
+      }
+    },
+    "bundle": {
+      "resources": [
+        "i18n/*.json"
+      ],
+      "active": true,
+      "targets": "all",
+      "identifier": "com.tikfarm",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ]
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "TikFarm",
+        "theme": "Light",
+        "width": 1024,
+        "height": 768,
+        "maximized": true,
+        "decorations": false
+      }
+    ],
+    "updater": {
+      "active": true,
+      "dialog": false,
+      "endpoints": [
+        "https://api.niostack.com/front-api/check_update?app=tikfarm"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENCNzMyMUE4ODZENTcwOEEKUldTS2NOV0dxQ0Z6eStkaXhiMERsc3c4MWF5Y1R0YUp6Wlo1VE5saWt5bXlVYmV3ejVSQW5PR1cK",
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

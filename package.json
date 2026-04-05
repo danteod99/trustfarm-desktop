@@ -1,76 +1,69 @@
 {
-  "name": "trustfarm-desktop",
+  "name": "tikfarm-desktop",
+  "private": true,
   "version": "1.0.0",
-  "description": "TrustFarm — Phone Farm Manager with Screen Mirroring & Automation",
-  "main": "main.js",
+  "type": "module",
   "scripts": {
-    "start": "electron .",
-    "dev": "concurrently \"npm run dev:renderer\" \"wait-on http://localhost:5174 && electron .\"",
-    "dev:renderer": "vite",
-    "build:renderer": "vite build",
-    "rebuild": "node-gyp rebuild --target=35.7.5 --arch=arm64 --dist-url=https://electronjs.org/headers --directory=node_modules/better-sqlite3 --build-from-source",
-    "postinstall": "npm run rebuild",
-    "build": "vite build && electron-builder",
-    "pack": "vite build && electron-builder --dir"
-  },
-  "author": "TrustFarm",
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.4",
-    "autoprefixer": "^10.4.21",
-    "concurrently": "^9.1.2",
-    "electron": "^35.1.2",
-    "electron-builder": "^26.0.12",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^3.4.17",
-    "vite": "^6.3.5",
-    "wait-on": "^8.0.3"
+    "start": "tauri dev",
+    "build:agent": "node scripts/build-agent.js",
+    "build:agent-debug": "node scripts/build-agent.js --debug",
+    "build:whitelabel:IgMatrix": "node scripts/build-whitelabel.js IgMatrix",
+    "build:whitelabel:AGATikTok": "node scripts/build-whitelabel.js AGATikTok",
+    "build:whitelabel": "node scripts/build-whitelabel.js",
+    "build:whitelabel-apk:IgMatrix": "node scripts/build-whitelabel-apk.js IgMatrix --verbose",
+    "build:whitelabel-apk:AGATikTok": "node scripts/build-whitelabel-apk.js AGATikTok --verbose",
+    "build:whitelabel-apk": "node scripts/build-whitelabel-apk.js",
+    "tikfarm-agent": "npm run build:agent-debug && node scripts/run-agent.js tikfarm",
+    "dev": "vite --mode dev",
+    "build": "vite build --mode prod",
+    "preview": "vite preview --mode test",
+    "lint": "eslint \"{src,scripts}/**/*.{js,ts,vue}\"",
+    "lint:fix": "npm run lint -- --fix",
+    "translate:i18n": "node translate-i18n.cjs",
+    "tauri": "tauri"
   },
   "dependencies": {
-    "better-sqlite3": "^11.9.1",
-    "imapflow": "^1.2.18",
-    "lucide-react": "^0.577.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "uuid": "^11.1.0"
+    "@anthropic-ai/sdk": "^0.71.2",
+    "@coleqiu/vue-drag-select": "^2.0.6-beta.1",
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-brands-svg-icons": "^6.4.2",
+    "@fortawesome/free-regular-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/vue-fontawesome": "^3.0.5",
+    "@headlessui/vue": "^1.7.23",
+    "@heroicons/vue": "^2.2.0",
+    "@tauri-apps/api": "^1.5.2",
+    "@types/jmuxer": "^2.0.7",
+    "@yume-chan/scrcpy": "^2.0.1",
+    "bluebird": "^3.7.2",
+    "canvas-confetti": "^1.9.3",
+    "countup.js": "^2.8.0",
+    "dompurify": "^3.2.2",
+    "h264-converter": "^0.1.4",
+    "jmuxer": "^2.0.5",
+    "marked": "^15.0.6",
+    "odometer_countup": "^1.0.4",
+    "qrcode": "^1.5.4",
+    "tikfarm-desktop": "file:",
+    "vue": "^3.3.4",
+    "vue-3-slider-component": "^1.0.2",
+    "vue-draggable-resizable": "^3.0.0",
+    "vue-flex-waterfall": "^2.3.1",
+    "vue-i18n": "^9.8.0",
+    "xlsx": "^0.18.5"
   },
-  "build": {
-    "appId": "com.trustfarm.desktop",
-    "productName": "TrustFarm",
-    "files": [
-      "main.js",
-      "preload.js",
-      "dist/**/*",
-      "src/db/**/*",
-      "src/devices/**/*",
-      "src/automation/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "bin/mac",
-        "to": "bin/mac",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
-        "from": "bin/win",
-        "to": "bin/win",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ],
-    "directories": {
-      "output": "release"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.icns"
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
-    }
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "@tauri-apps/cli": "^1.5.9",
+    "@vitalets/google-translate-api": "^9.2.1",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "cross-env": "^10.1.0",
+    "daisyui": "^5.5.5",
+    "eslint": "^8.57.1",
+    "eslint-plugin-vue": "^9.27.0",
+    "postcss": "^8.4.38",
+    "shx": "^0.3.4",
+    "tailwindcss": "^4.1.17",
+    "vite": "^5.0.0"
   }
 }

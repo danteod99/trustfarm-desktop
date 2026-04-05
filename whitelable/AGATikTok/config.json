@@ -1,0 +1,11 @@
+{
+    "appName": "AGA TikTok",
+    "iconFile": "app-icon.png",
+    "showOfficialWebsite": false,
+    "enablePay": false,
+    "enableSupportEntry": false,
+    "showAppNameInTitle": true,
+    "showLogo": true,
+    "showBranding": false,
+    "targetApp": "tiktok"
+}
