@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a1628"/>
+      <stop offset="100%" style="stop-color:#0d2140"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00e5ff"/>
+      <stop offset="100%" style="stop-color:#007ABF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="200" fill="url(#bg)"/>
+  <rect x="40" y="40" width="944" height="944" rx="180" fill="none" stroke="url(#accent)" stroke-width="8" opacity="0.3"/>
+  <!-- Phone devices -->
+  <rect x="220" y="250" width="160" height="260" rx="16" fill="none" stroke="#00e5ff" stroke-width="7"/>
+  <rect x="220" y="250" width="160" height="30" rx="16" fill="#00e5ff" opacity="0.15"/>
+  <circle cx="300" cy="490" r="8" fill="#00e5ff" opacity="0.5"/>
+
+  <rect x="430" y="280" width="160" height="260" rx="16" fill="none" stroke="#00bcd4" stroke-width="7"/>
+  <rect x="430" y="280" width="160" height="30" rx="16" fill="#00bcd4" opacity="0.15"/>
+  <circle cx="510" cy="520" r="8" fill="#00bcd4" opacity="0.5"/>
+
+  <rect x="640" y="250" width="160" height="260" rx="16" fill="none" stroke="#0097a7" stroke-width="7"/>
+  <rect x="640" y="250" width="160" height="30" rx="16" fill="#0097a7" opacity="0.15"/>
+  <circle cx="720" cy="490" r="8" fill="#0097a7" opacity="0.5"/>
+
+  <!-- Shield -->
+  <path d="M512 580 L420 630 L420 720 Q420 800 512 840 Q604 800 604 720 L604 630 Z" fill="none" stroke="url(#accent)" stroke-width="10"/>
+  <path d="M512 620 L460 648 L460 712 Q460 770 512 800 Q564 770 564 712 L564 648 Z" fill="#00e5ff" opacity="0.15"/>
+  <text x="512" y="740" text-anchor="middle" fill="#00e5ff" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="80">TF</text>
+</svg>
