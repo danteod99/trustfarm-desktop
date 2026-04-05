@@ -20,7 +20,7 @@
     <!-- 官网 -->
     <a v-if="whitelabelConfig.showOfficialWebsite && whitelabelConfig.officialWebsite"
       class="flex items-center space-x-1 text-md text-info ml-2 hover:underline"
-      :href="whitelabelConfig.officialWebsite + '/docs/intro'" target="_blank">
+      href="https://www.skool.com/artificial-humans-7653/about" target="_blank">
       <font-awesome-icon icon="fa-solid fa-file-lines" class="h-4 w-4" />
       <span>{{ $t('tutorial') }}</span>
     </a>
