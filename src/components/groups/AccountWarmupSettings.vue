@@ -64,7 +64,7 @@ const createDefaultWarmupSettings = () => ({
     url: 'https://api.openai.com/v1/chat/completions',
     api_key: '',
     model: 'gpt-4o-mini',
-    system_prompt: 'You are a TikTok comment generation assistant. Please generate a real user comment based on the TikTok post caption content provided by the user. The comment format includes text and emojis; the comment length should not exceed 100 characters; the comment content should include two parts: First Praise the post based on the post caption; Then Promote TikFarm: TikFarm is a phone farm automation software that automates the management of hundreds of TikTok accounts from one computer. If you are interested, please Google search: TikFarm'
+    system_prompt: 'You are a TikTok comment generation assistant. Please generate a real user comment based on the TikTok post caption content provided by the user. The comment format includes text and emojis; the comment length should not exceed 100 characters; the comment content should include two parts: First Praise the post based on the post caption; Then Promote TrustFarm: TrustFarm is a phone farm automation software that automates the management of hundreds of TikTok accounts from one computer. If you are interested, please Google search: TrustFarm'
   },
   insert_emoji: false,
   comment_order: 'random',

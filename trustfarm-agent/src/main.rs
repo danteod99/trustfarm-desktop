@@ -11,8 +11,8 @@ const WS_PORT: u16 = 51627;
 
 fn find_scrcpy_server() -> PathBuf {
     let candidates = vec![
-        Some(PathBuf::from(r"C:\Users\Usuario\tikfarm-agent\scrcpy-dist\scrcpy-win64-v3.1\scrcpy-server")),
-        dirs::config_dir().map(|d| d.join("com.tikfarm").join("bin").join("scrcpy-server")),
+        Some(PathBuf::from(r"C:\Users\Usuario\trustfarm-agent\scrcpy-dist\scrcpy-win64-v3.1\scrcpy-server")),
+        dirs::config_dir().map(|d| d.join("com.trustfarm").join("bin").join("scrcpy-server")),
         dirs::config_dir().map(|d| d.join("com.tikmatrix").join("bin").join("scrcpy-server")),
     ];
 
@@ -26,7 +26,7 @@ fn find_scrcpy_server() -> PathBuf {
 }
 
 fn write_port_file(filename: &str, port: u16) {
-    let app_data = dirs::config_dir().unwrap_or_default().join("com.tikfarm");
+    let app_data = dirs::config_dir().unwrap_or_default().join("com.trustfarm");
     std::fs::create_dir_all(&app_data).ok();
     let path = app_data.join(filename);
     std::fs::write(&path, port.to_string()).ok();
@@ -64,7 +64,7 @@ fn run_on_serials(adb_path: &PathBuf, body: &serde_json::Value, args: &[&str]) -
 #[tokio::main]
 async fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
-    log::info!("TikFarm Agent v2 starting (standalone)...");
+    log::info!("TrustFarm Agent v2 starting (standalone)...");
 
     let adb_path = adb::find_adb();
     log::info!("ADB: {:?}", adb_path);
@@ -276,13 +276,13 @@ async fn main() {
 
     // === AUTH/LICENSE (no-op) ===
     let auth_route = warp::path!("api" / "auth").map(|| {
-        warp::reply::json(&json!({ "code": 200, "data": { "license": "tikfarm", "plan": "unlimited", "expired": false } }))
+        warp::reply::json(&json!({ "code": 200, "data": { "license": "trustfarm", "plan": "unlimited", "expired": false } }))
     });
 
     let license_route = warp::path!("api" / "get_license").map(|| {
         let license_data = json!({
-            "license_code": "tikfarm-unlimited",
-            "plan_name": "TikFarm Pro",
+            "license_code": "trustfarm-unlimited",
+            "plan_name": "TrustFarm Pro",
             "leftdays": 9999,
             "is_stripe_active": 1,
             "concurrency_limit": 100,

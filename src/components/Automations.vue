@@ -357,7 +357,7 @@ export default {
     async savePipeline() {
       this.newPipeline.platform = this.activePlatform;
       this.pipelines.push({ ...this.newPipeline, steps: [...this.newPipeline.steps] });
-      await setItem('tikfarm_pipelines', JSON.stringify(this.pipelines));
+      await setItem('trustfarm_pipelines', JSON.stringify(this.pipelines));
       this.creatingPipeline = false;
       await this.$emiter('NOTIFY', { type: 'success', message: `Pipeline "${this.newPipeline.name}" saved!`, timeout: 2000 });
     },
@@ -365,7 +365,7 @@ export default {
       const globalIdx = this.pipelines.indexOf(this.filteredPipelines[idx]);
       if (globalIdx >= 0) {
         this.pipelines.splice(globalIdx, 1);
-        await setItem('tikfarm_pipelines', JSON.stringify(this.pipelines));
+        await setItem('trustfarm_pipelines', JSON.stringify(this.pipelines));
       }
     },
     async runPipeline(pipe) {
@@ -385,7 +385,7 @@ export default {
   },
   async mounted() {
     try {
-      const stored = await getItem('tikfarm_pipelines');
+      const stored = await getItem('trustfarm_pipelines');
       if (stored) {
         this.pipelines = JSON.parse(stored);
       }

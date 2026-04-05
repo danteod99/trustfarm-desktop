@@ -188,7 +188,7 @@ sudo ./init-vps.sh
 sudo ./setup-vps.sh
 
 # Follow interactive prompts:
-# - Choose site (tikfarm, igmatrix, etc.)
+# - Choose site (trustfarm, igmatrix, etc.)
 # - Choose site type (static or proxy)
 # - Configure SSL (yes/no)
 # - Enter GitHub public key

@@ -7,7 +7,7 @@ const rootDir = process.cwd()
  * 版本信息更新脚本
  * 用法:
  *   node update-version.js
- *   node update-version.js --app=tikfarm --app-name=TikFarm
+ *   node update-version.js --app=trustfarm --app-name=TrustFarm
  *   node update-version.js --app=videomagic --app-name=VideoMagic
  */
 
@@ -15,8 +15,8 @@ const rootDir = process.cwd()
 function parseArgs() {
     const args = process.argv.slice(2)
     const params = {
-        app: 'tikfarm',
-        appName: 'TikFarm'
+        app: 'trustfarm',
+        appName: 'TrustFarm'
     }
 
     for (const arg of args) {
@@ -59,24 +59,24 @@ let body = JSON.stringify({
     "platforms": {
         "windows-x86_64": {
             "signature": signature,
-            "url": `https://api.tikfarm.com/front-api/release/${params.appName}_${version}_x64_en-US.msi.zip`
+            "url": `https://api.trustfarm.com/front-api/release/${params.appName}_${version}_x64_en-US.msi.zip`
         },
         "darwin-x86_64": {
             "signature": signature,
-            "url": `https://api.tikfarm.com/front-api/release/${params.appName}_${version}_universal.dmg`
+            "url": `https://api.trustfarm.com/front-api/release/${params.appName}_${version}_universal.dmg`
         },
         "darwin-arm64": {
             "signature": signature,
-            "url": `https://api.tikfarm.com/front-api/release/${params.appName}_${version}_universal.dmg`
+            "url": `https://api.trustfarm.com/front-api/release/${params.appName}_${version}_universal.dmg`
         },
         "darwin-aarch64": {
             "signature": signature,
-            "url": `https://api.tikfarm.com/front-api/release/${params.appName}_${version}_universal.dmg`
+            "url": `https://api.trustfarm.com/front-api/release/${params.appName}_${version}_universal.dmg`
         }
     }
 }, null, 2)
 
-let response = await fetch('https://api.tikfarm.com/ci/update_version_info', {
+let response = await fetch('https://api.trustfarm.com/ci/update_version_info', {
     method: 'PUT',
     headers: {
         'Content-Type': 'text/plain',

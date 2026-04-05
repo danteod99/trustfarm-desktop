@@ -7,8 +7,8 @@ import { copyFileSync, mkdirSync, chmodSync, unlinkSync } from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Determine the tikfarm-agent directory path
-const agentDir = resolve(__dirname, '..', '..', 'tikfarm-agent');
+// Determine the trustfarm-agent directory path
+const agentDir = resolve(__dirname, '..', '..', 'trustfarm-agent');
 const isWindows = platform() === 'win32';
 const isMac = platform() === 'darwin';
 const args = process.argv.slice(2);
@@ -17,7 +17,7 @@ if (debugMode) {
     console.log('🐛 Debug mode enabled');
 }
 
-console.log(`🚀 Building tikfarm-agent (${isWindows ? 'Windows' : isMac ? 'macOS' : 'Linux'})...`);
+console.log(`🚀 Building trustfarm-agent (${isWindows ? 'Windows' : isMac ? 'macOS' : 'Linux'})...`);
 console.log(`📁 Agent directory: ${agentDir}`);
 
 // Step 1: Kill existing processes
@@ -103,7 +103,7 @@ async function copyBinaries() {
     console.log('📦 Copying binaries...');
 
     const releaseDir = join(agentDir, 'target', debugMode ? 'debug' : 'release');
-    const tikfarmTargetDir = "com.tikfarm";
+    const trustfarmTargetDir = "com.trustfarm";
     const igmatrixTargetDir = "com.igmatrix";
     const agatiktokTargetDir = "com.agatiktok";
 
@@ -138,23 +138,23 @@ async function copyBinaries() {
     if (isWindows) {
         // Windows paths
         const appDataDir = process.env.APPDATA || join(homedir(), 'AppData', 'Roaming');
-        const tikfarmBin = join(appDataDir, tikfarmTargetDir, 'bin');
+        const trustfarmBin = join(appDataDir, trustfarmTargetDir, 'bin');
         const igmatrixBin = join(appDataDir, igmatrixTargetDir, 'bin');
         const agatiktokBin = join(appDataDir, agatiktokTargetDir, 'bin');
 
         // Create directories if they don't exist
-        mkdirSync(tikfarmBin, { recursive: true });
+        mkdirSync(trustfarmBin, { recursive: true });
         mkdirSync(igmatrixBin, { recursive: true });
         mkdirSync(agatiktokBin, { recursive: true });
         // Copy agent.exe
         const agentSrc = join(releaseDir, 'agent.exe');
-        await copyWithRetry(agentSrc, join(tikfarmBin, 'agent.exe'));
+        await copyWithRetry(agentSrc, join(trustfarmBin, 'agent.exe'));
         await copyWithRetry(agentSrc, join(igmatrixBin, 'agent.exe'));
         await copyWithRetry(agentSrc, join(agatiktokBin, 'agent.exe'));
 
         // Copy script.exe
         const scriptSrc = join(releaseDir, 'script.exe');
-        await copyWithRetry(scriptSrc, join(tikfarmBin, 'script.exe'));
+        await copyWithRetry(scriptSrc, join(trustfarmBin, 'script.exe'));
         await copyWithRetry(scriptSrc, join(igmatrixBin, 'script.exe'));
         await copyWithRetry(scriptSrc, join(agatiktokBin, 'script.exe'));
 
@@ -166,19 +166,19 @@ async function copyBinaries() {
 
 
         // Copy agent
-        const tikfarmAgentDir = join(appSupportDir, tikfarmTargetDir, 'bin');
+        const trustfarmAgentDir = join(appSupportDir, trustfarmTargetDir, 'bin');
         const igmatrixAgentDir = join(appSupportDir, igmatrixTargetDir, 'bin');
         const agatiktokAgentDir = join(appSupportDir, agatiktokTargetDir, 'bin');
-        mkdirSync(tikfarmAgentDir, { recursive: true });
+        mkdirSync(trustfarmAgentDir, { recursive: true });
         mkdirSync(igmatrixAgentDir, { recursive: true });
         mkdirSync(agatiktokAgentDir, { recursive: true });
         const agentSrc = join(releaseDir, 'agent');
-        await copyWithRetry(agentSrc, join(tikfarmAgentDir, 'agent'), true);
+        await copyWithRetry(agentSrc, join(trustfarmAgentDir, 'agent'), true);
         await copyWithRetry(agentSrc, join(igmatrixAgentDir, 'agent'), true);
         await copyWithRetry(agentSrc, join(agatiktokAgentDir, 'agent'), true);
         // Copy script
         const scriptSrc = join(releaseDir, 'script');
-        await copyWithRetry(scriptSrc, join(tikfarmAgentDir, 'script'), true);
+        await copyWithRetry(scriptSrc, join(trustfarmAgentDir, 'script'), true);
         await copyWithRetry(scriptSrc, join(igmatrixAgentDir, 'script'), true);
         await copyWithRetry(scriptSrc, join(agatiktokAgentDir, 'script'), true);
     }

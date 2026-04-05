@@ -35,7 +35,7 @@ if ((options.findUnused || options.removeUnused) && options.languages) {
 // 显示帮助信息
 if (options.help) {
   console.log(`
-🌍 TikFarm Desktop - 国际化翻译检查和同步工具
+🌍 TrustFarm Desktop - 国际化翻译检查和同步工具
 
 用法:
   npm run sync                          基本用法：检查并同步所有语言
@@ -463,7 +463,7 @@ function printSummaryReport(allIssues) {
 }
 
 console.log('='.repeat(60));
-console.log('🌍 TikFarm Desktop - 国际化翻译检查和同步工具');
+console.log('🌍 TrustFarm Desktop - 国际化翻译检查和同步工具');
 console.log('='.repeat(60));
 
 if (options.checkOnly) {

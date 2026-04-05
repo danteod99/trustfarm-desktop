@@ -845,7 +845,7 @@ export default {
   supportEmptyState: 'Noch keine Tickets.',
   supportEntryTitle: 'Support-Ticket erstellen',
   supportFormDescription: 'Sammeln Sie Protokolle von betroffenen Geräten, beschreiben Sie das Problem, und das Support-Team wird innerhalb von 12 Stunden antworten.',
-  supportFormTitle: 'Brauchen Sie Hilfe mit TikFarm?',
+  supportFormTitle: 'Brauchen Sie Hilfe mit TrustFarm?',
   supportLoading: 'Tickets werden geladen...',
   supportPriority: 'Priorität',
   supportPriorityHigh: 'Hoch',

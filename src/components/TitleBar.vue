@@ -3,7 +3,7 @@
     class="h-12 bg-base-100 select-none flex items-center justify-between fixed top-0 left-0 right-0 z-50 px-4 shadow-md">
     <!-- 左侧:应用图标、名称、版本和检查更新 -->
     <div class="flex items-center space-x-2">
-      <img ref="logo" :src="currentLogoSrc" class="h-10 w-auto logo" alt="TikFarm Logo" />
+      <img ref="logo" :src="currentLogoSrc" class="h-10 w-auto logo" alt="TrustFarm Logo" />
       <span class="text-2xl text-base-content font-bold" v-if="whitelabelConfig.showAppNameInTitle">{{
         whitelabelConfig.appName }}</span>
       <!-- 检查更新按钮 -->
@@ -664,7 +664,7 @@ export default {
 
     onWhiteLabelConfigUpdated(config) {
       this.whitelabelConfig = config;
-      document.title = config.appName || 'TikFarm';
+      document.title = config.appName || 'TrustFarm';
       this.$emit('whitelabel-updated', config);
     },
 

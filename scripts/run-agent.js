@@ -7,18 +7,18 @@ const isMac = platform() === 'darwin';
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const appType = args[0] || 'tikfarm'; // Default to tikfarm
+const appType = args[0] || 'trustfarm'; // Default to trustfarm
 
 // Validate app type
-if (!['tikfarm', 'igmatrix'].includes(appType.toLowerCase())) {
-    console.error('❌ Invalid app type. Use: tikfarm or igmatrix');
-    console.log('Usage: node run-agent.js [tikfarm|igmatrix]');
+if (!['trustfarm', 'igmatrix'].includes(appType.toLowerCase())) {
+    console.error('❌ Invalid app type. Use: trustfarm or igmatrix');
+    console.log('Usage: node run-agent.js [trustfarm|igmatrix]');
     process.exit(1);
 }
 
-const isTikFarm = appType.toLowerCase() === 'tikfarm';
-const appName = isTikFarm ? 'TikFarm' : 'IgMatrix';
-const appId = isTikFarm ? 'com.tikfarm' : 'com.igmatrix';
+const isTrustFarm = appType.toLowerCase() === 'trustfarm';
+const appName = isTrustFarm ? 'TrustFarm' : 'IgMatrix';
+const appId = isTrustFarm ? 'com.trustfarm' : 'com.igmatrix';
 
 console.log(`🚀 Starting ${appName} Agent...`);
 

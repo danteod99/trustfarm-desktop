@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
-# TikFarm VPS Setup Script v1.1   
-# One-click setup for www.tikfarm.com ecosystem on Ubuntu 22.04 LTS
+# TrustFarm VPS Setup Script v1.1   
+# One-click setup for www.trustfarm.com ecosystem on Ubuntu 22.04 LTS
 # 
 # NOTE: For GitHub Actions automation, use init-vps.sh instead!
 # - init-vps.sh: Non-interactive initialization script for new VPS
@@ -19,7 +19,7 @@ WWW_DOMAIN=""
 WEB_ROOT=""
 NGINX_CONF=""
 DEPLOY_USER="deploy"
-LOG_FILE="/var/log/tikfarm-setup.log"
+LOG_FILE="/var/log/trustfarm-setup.log"
 SSH_PORT="22"
 GITHUB_PUBKEY=""
 
@@ -58,9 +58,9 @@ print_banner() {
     echo -e "${CYAN}"
     echo "╔═══════════════════════════════════════════════════════════════╗"
     echo "║                                                               ║"
-    echo "║              TikFarm VPS Setup Script v1.0                  ║"
+    echo "║              TrustFarm VPS Setup Script v1.0                  ║"
     echo "║                                                               ║"
-    echo "║  Automated setup for TikFarm ecosystem websites             ║"
+    echo "║  Automated setup for TrustFarm ecosystem websites             ║"
     echo "║                                                               ║"
     echo "╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -117,7 +117,7 @@ interactive_config() {
     
     # Site selection
     echo -e "${YELLOW}Select site to deploy:${NC}"
-    echo "  1) tikfarm.com (TikFarm)"
+    echo "  1) trustfarm.com (TrustFarm)"
     echo "  2) igmatrix.com (IgMatrix)"
     echo "  3) ytmatrix.com (YTMatrix)"
     echo "  4) tikzenx.com (TikZenX)"
@@ -128,7 +128,7 @@ interactive_config() {
         read -p "Enter choice [1-5]: " site_choice
         case $site_choice in
             1)
-                DOMAIN="tikfarm.com"
+                DOMAIN="trustfarm.com"
                 break
                 ;;
             2)
@@ -358,7 +358,7 @@ setup_deploy_user() {
     # Create sudoers configuration for deploy user - grant full sudo access
     cat > /etc/sudoers.d/deploy << EOF
 # Allow deploy user full sudo access for web deployments and system management
-# This simplifies permission management for the TikFarm ecosystem
+# This simplifies permission management for the TrustFarm ecosystem
 $DEPLOY_USER ALL=(ALL) NOPASSWD: ALL
 EOF
     
@@ -561,7 +561,7 @@ TARGET_DIR="$2"
 
 if [[ -z "$ARCHIVE" || -z "$TARGET_DIR" ]]; then
     echo "Usage: $0 <archive_path> <target_dir>"
-    echo "Example: $0 /tmp/build-tikfarm.tar.gz /var/www.tikfarm.com"
+    echo "Example: $0 /tmp/build-trustfarm.tar.gz /var/www.trustfarm.com"
     exit 1
 fi
 
@@ -634,10 +634,10 @@ setup_security() {
     chmod 600 /etc/ssh/sshd_config
     
     # Kernel security parameters
-    if ! grep -q "# TikFarm Security" /etc/sysctl.conf; then
+    if ! grep -q "# TrustFarm Security" /etc/sysctl.conf; then
         cat >> /etc/sysctl.conf << 'EOF'
 
-# TikFarm Security hardening
+# TrustFarm Security hardening
 net.ipv4.conf.default.rp_filter=1
 net.ipv4.conf.all.rp_filter=1
 net.ipv4.tcp_syncookies=1
@@ -694,7 +694,7 @@ print_summary() {
     
     echo ""
     echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
-    echo -e "${GREEN}              TikFarm VPS Setup Complete!                    ${NC}"
+    echo -e "${GREEN}              TrustFarm VPS Setup Complete!                    ${NC}"
     echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
     echo -e "${YELLOW}Configuration Summary:${NC}"
@@ -752,7 +752,7 @@ main() {
     # Interactive configuration
     interactive_config
     
-    log_info "Starting TikFarm VPS setup..."
+    log_info "Starting TrustFarm VPS setup..."
     
     # Execute all setup steps
     setup_system

@@ -112,7 +112,7 @@ npm run build:whitelabel-apk:IgMatrix
 node scripts/build-whitelabel-apk.js <品牌目录> --verbose
 ```
 
-**注意**: APK 构建需要 `tikfarm-android` 仓库在同一父目录下。
+**注意**: APK 构建需要 `trustfarm-android` 仓库在同一父目录下。
 
 ## 创建新的白标品牌
 

@@ -20,7 +20,7 @@ pub struct Device {
 pub fn find_adb() -> PathBuf {
     // Check common ADB locations
     let candidates = vec![
-        dirs::data_dir().map(|d| d.join("com.tikfarm").join("platform-tools").join("adb.exe")),
+        dirs::data_dir().map(|d| d.join("com.trustfarm").join("platform-tools").join("adb.exe")),
         dirs::data_dir().map(|d| d.join("com.tikmatrix").join("platform-tools").join("adb.exe")),
         Some(PathBuf::from(r"C:\Users\Usuario\adb.exe")),
         Some(PathBuf::from(r"C:\Users\Usuario\AppData\Roaming\com.tikmatrix\platform-tools\adb.exe")),

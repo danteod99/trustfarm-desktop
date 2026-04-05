@@ -76,7 +76,7 @@ const appId = sanitizeAppId(appName);
 if (!appId) {
     throw new Error('无法根据 appName 生成有效的 appId');
 }
-const updaterEndpoint = `https://api.tikfarm.com/front-api/check_update?app=${appId}`;
+const updaterEndpoint = `https://api.trustfarm.com/front-api/check_update?app=${appId}`;
 
 if (verbose) {
     console.log('📋 白标配置:');

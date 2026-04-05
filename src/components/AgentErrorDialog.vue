@@ -58,7 +58,7 @@ export default {
     computed: {
         baseWebsite() {
             const site = (this.officialWebsite || '').trim();
-            if (!site) return 'https://tikfarm.com';
+            if (!site) return 'https://trustfarm.com';
             return site.replace(/\/+$/g, '');
         },
         shouldShowLinks() {

@@ -25,8 +25,8 @@ function parseArgs() {
         platform: null,
         distributor: null,
         allDistributors: false,
-        app: 'tikfarm',
-        appName: 'TikFarm'
+        app: 'trustfarm',
+        appName: 'TrustFarm'
     }
 
     for (const arg of args) {
@@ -79,8 +79,8 @@ function buildDownloadUrl(platform, version, distributorCode, appName) {
     }
 
     basePath = distributorCode === 'OFFICIAL'
-        ? 'https://api.tikfarm.com/front-api/release'
-        : 'https://api.tikfarm.com/front-api/release/distributors'
+        ? 'https://api.trustfarm.com/front-api/release'
+        : 'https://api.trustfarm.com/front-api/release/distributors'
 
     return `${basePath}/${fileName}`
 }
@@ -90,7 +90,7 @@ async function updateDownloadUrl(platform, app, distributorCode, downloadUrl) {
     console.log(`Updating ${distributorCode} (${platform}): ${downloadUrl}`)
 
     try {
-        const response = await fetch('https://api.tikfarm.com/ci/update_download_url', {
+        const response = await fetch('https://api.trustfarm.com/ci/update_download_url', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'text/plain',
@@ -102,7 +102,7 @@ async function updateDownloadUrl(platform, app, distributorCode, downloadUrl) {
             },
             body: downloadUrl
         })
-        console.log(`tikfarm response: ${response.status} ${response.statusText}`)
+        console.log(`trustfarm response: ${response.status} ${response.statusText}`)
 
         if (response.ok) {
             console.log(`✅ ${distributorCode}: ${response.status} ${response.statusText}`)

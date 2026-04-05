@@ -25,8 +25,8 @@ async function walk(dir) {
 function replaceAll(text) {
     // Replace main brand names and common lowercase variants.
     return text
-        .replace(/TikFarm/g, 'IgMatrix')
-        .replace(/tikfarm/g, 'igmatrix')
+        .replace(/TrustFarm/g, 'IgMatrix')
+        .replace(/trustfarm/g, 'igmatrix')
         .replace(/TikTok/g, 'Instagram')
         .replace(/tiktok/g, 'instagram');
 }
@@ -84,11 +84,11 @@ async function processDocusaurus() {
     try {
         let content = await fs.readFile(file, 'utf8');
         // Only replace specific identifiers in the docusaurus config
-        let updated = content.replace(/tikfarm_logo/g, 'igmatrix_logo');
+        let updated = content.replace(/trustfarm_logo/g, 'igmatrix_logo');
         // Also replace the download button/label text
-        updated = updated.replace(/Download-TikFarm/g, 'Download-IgMatrix');
-        // Also replace https://tikfarm.com URLs to https://igmatrix.com
-        updated = updated.replace(/https:\/\/tikfarm\.com/g, 'https://igmatrix.com');
+        updated = updated.replace(/Download-TrustFarm/g, 'Download-IgMatrix');
+        // Also replace https://trustfarm.com URLs to https://igmatrix.com
+        updated = updated.replace(/https:\/\/trustfarm\.com/g, 'https://igmatrix.com');
         if (updated !== content) {
             await fs.writeFile(file, updated, 'utf8');
             console.log('[updated]', path.relative(root, file));
@@ -107,7 +107,7 @@ async function processDocusaurus() {
 }
 
 async function main() {
-    console.log('Brand replace start: TikFarm -> IgMatrix, TikTok -> Instagram');
+    console.log('Brand replace start: TrustFarm -> IgMatrix, TikTok -> Instagram');
     console.log('Working directory:', root);
     await processSrc();
     await processI18n();

@@ -252,7 +252,7 @@ export default {
                 actions: [...this.recordedActions],
                 createdAt: new Date().toISOString()
             });
-            await setJsonItem('tikfarm_macros', this.macros);
+            await setJsonItem('trustfarm_macros', this.macros);
             this.showSaveDialog = false;
             this.macroName = '';
             this.recordedActions = [];
@@ -260,7 +260,7 @@ export default {
         },
         async deleteMacro(idx) {
             this.macros.splice(idx, 1);
-            await setJsonItem('tikfarm_macros', this.macros);
+            await setJsonItem('trustfarm_macros', this.macros);
         },
         async playMacro(macro) {
             await this.$emiter('NOTIFY', { type: 'info', message: `Playing "${macro.name}" on all selected devices (${macro.actions.length} actions)...`, timeout: 2000 });
@@ -281,8 +281,8 @@ export default {
             await this.$emiter('NOTIFY', { type: 'success', message: `Macro "${macro.name}" completed!`, timeout: 2000 });
         },
         async loadCommands() {
-            const savedCommands = await getJsonItem('tikfarm_custom_commands', null);
-            const presetsLoaded = await getItem('tikfarm_presets_loaded');
+            const savedCommands = await getJsonItem('trustfarm_custom_commands', null);
+            const presetsLoaded = await getItem('trustfarm_presets_loaded');
 
             if (Array.isArray(savedCommands)) {
                 this.commands = savedCommands;
@@ -291,7 +291,7 @@ export default {
             // 构建预置命令，优先使用 agent 存储的 apk_package_name，否则使用 settings.packagename，最后回退到默认
             let mainPkg = await getItem('apk_package_name');
             if (!mainPkg) {
-                mainPkg = 'com.github.tikfarm';
+                mainPkg = 'com.github.trustfarm';
             }
 
             const dynamicPresets = [
@@ -328,12 +328,12 @@ export default {
             // 如果预置命令尚未加载，则添加它们
             if (!presetsLoaded) {
                 this.commands = [...this.commands, ...dynamicPresets];
-                await setItem('tikfarm_presets_loaded', 'true');
+                await setItem('trustfarm_presets_loaded', 'true');
                 await this.saveCommands();
             }
         },
         async saveCommands() {
-            await setJsonItem('tikfarm_custom_commands', this.commands);
+            await setJsonItem('trustfarm_custom_commands', this.commands);
         },
         showCreateDialog() {
             this.editing = false;
@@ -445,8 +445,8 @@ export default {
         // 重置命令
         async resetCommands() {
             // 清除持久化存储中的命令数据
-            await removeItem('tikfarm_custom_commands');
-            await removeItem('tikfarm_presets_loaded');
+            await removeItem('trustfarm_custom_commands');
+            await removeItem('trustfarm_presets_loaded');
 
             // 清空当前命令列表
             this.commands = [];
@@ -455,7 +455,7 @@ export default {
             this.commands = [...this.presetCommands];
 
             // 保存到本地存储
-            await setItem('tikfarm_presets_loaded', 'true');
+            await setItem('trustfarm_presets_loaded', 'true');
             await this.saveCommands();
 
             // 关闭对话框
@@ -473,7 +473,7 @@ export default {
         await this.loadCommands();
         // Load saved macros
         try {
-            const saved = await getJsonItem('tikfarm_macros', null);
+            const saved = await getJsonItem('trustfarm_macros', null);
             if (saved) this.macros = saved;
         } catch (e) { /* ignore */ }
     }

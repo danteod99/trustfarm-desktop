@@ -1,11 +1,11 @@
-[![Service Health Check](https://github.com/tikfarm/tikfarm-desktop/actions/workflows/service-health-check.yml/badge.svg)](https://github.com/tikfarm/tikfarm-desktop/actions/workflows/service-health-check.yml)
+[![Service Health Check](https://github.com/trustfarm/trustfarm-desktop/actions/workflows/service-health-check.yml/badge.svg)](https://github.com/trustfarm/trustfarm-desktop/actions/workflows/service-health-check.yml)
 
-# TikFarm
+# TrustFarm
 
-📱 TikFarm- is a PC desktop software for automating TikTok on Android phones.
+📱 TrustFarm- is a PC desktop software for automating TikTok on Android phones.
 
-Download: <https://tikfarm.com/Download/>
-Tutorial: <https://tikfarm.com/docs/intro>
+Download: <https://trustfarm.com/Download/>
+Tutorial: <https://trustfarm.com/docs/intro>
 
 💪Features:
 
@@ -26,7 +26,7 @@ Tutorial: <https://tikfarm.com/docs/intro>
 - Minute-level task scheduling: Automate tasks with minute-level precision.
 - Import/export accounts.
 - Custom functionality: Add any feature on request.
-- Multilingual support: TikFarm supports EN/RU/CN.
+- Multilingual support: TrustFarm supports EN/RU/CN.
 Note: The TikTok app on the phone must be in English for all features to work properly.
 
 ⚙️Requirements:
@@ -35,17 +35,17 @@ Note: The TikTok app on the phone must be in English for all features to work pr
 - 🤖📱Android phones/devices with Android 5.0+ (API 21) Phones do not require root access.
 
 🔧Common troubleshooting and solutions
-<https://tikfarm.com/docs/category/troubleshooting>
+<https://trustfarm.com/docs/category/troubleshooting>
 
 ## Quick start
 
-[Official website](https://www.tikfarm.com)
+[Official website](https://www.trustfarm.com)
 
-[YouTube](https://www.youtube.com/@tikfarm)
+[YouTube](https://www.youtube.com/@trustfarm)
 
 ## Discussions
 
-[Telegram](https://t.me/tikfarm_agent_bot)
+[Telegram](https://t.me/trustfarm_agent_bot)
 
 ## Development
 
@@ -64,7 +64,7 @@ npm run tauri dev
 
 ## FAQ
 
-### How to run TikFarm Agent on phone by adb?
+### How to run TrustFarm Agent on phone by adb?
 
 You can check the reason why the agent is not running by the following command.
 
@@ -72,16 +72,16 @@ You can check the reason why the agent is not running by the following command.
 # You can find the device id by the following command.
 adb devices
 # Start the agent on the phone.
-adb -s <device_id> shell am instrument -w -r -e debug false -e class com.github.tikfarm.stub.Stub com.github.tikfarm.test/androidx.test.runner.AndroidJUnitRunner
+adb -s <device_id> shell am instrument -w -r -e debug false -e class com.github.trustfarm.stub.Stub com.github.trustfarm.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-### How to customize TikFarm Brand?
+### How to customize TrustFarm Brand?
 
 - src/src-tauri/tauri.conf.json
 
 ```shell
 "package": {
-    "productName": "TikFarm",
+    "productName": "TrustFarm",
     "version": "1.8.1"
   }
 ```
@@ -89,19 +89,19 @@ adb -s <device_id> shell am instrument -w -r -e debug false -e class com.github.
 ### How to fix vcruntime140_1.dll not found?
 
 Need to install Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019.
-<https://tikfarm.com/blog/how-to-fix-vcruntime140.dll-not-found-when-open-TikFarm>
+<https://trustfarm.com/blog/how-to-fix-vcruntime140.dll-not-found-when-open-TrustFarm>
 
 ### How to fix The application was unable to start correctly (0xc000007b)?
 
 Need to install Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019.
-<https://tikfarm.com/blog/how-to-fix-vcruntime140.dll-not-found-when-open-TikFarm>
+<https://trustfarm.com/blog/how-to-fix-vcruntime140.dll-not-found-when-open-TrustFarm>
 
-### Fix unable to start TikFarm on Mac
+### Fix unable to start TrustFarm on Mac
 
 ```shell
-xattr -cr /Applications/TikFarm.app
+xattr -cr /Applications/TrustFarm.app
 ```
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=tikfarm/tikfarm-desktop&type=Date)](https://star-history.com/#tikfarm/tikfarm-desktop&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=trustfarm/trustfarm-desktop&type=Date)](https://star-history.com/#trustfarm/trustfarm-desktop&Date)

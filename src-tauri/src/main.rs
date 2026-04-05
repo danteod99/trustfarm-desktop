@@ -63,7 +63,7 @@ fn get_distributor_code(app_handle: tauri::AppHandle) -> Result<String, String> 
 fn setup_env(working_dir: &str, version: String) {
     unsafe {
         std::env::set_var("MATRIX_APP_WORK_DIR", working_dir);
-        std::env::set_var("MATRIX_APP_NAME", "TikFarm".to_string());
+        std::env::set_var("MATRIX_APP_NAME", "TrustFarm".to_string());
         std::env::set_var("MATRIX_APP_VERSION", version.clone());
         std::env::set_var("MATRIX_TARGET_APP", "tiktok".to_string());
     };
@@ -287,7 +287,7 @@ fn main() -> std::io::Result<()> {
             Ok(())
         })
         .on_page_load(|_window, _payload| {
-            log::info!("[TikFarm] page load triggered");
+            log::info!("[TrustFarm] page load triggered");
         })
         //listen to the tauri update event
         .run(tauri::generate_context!())

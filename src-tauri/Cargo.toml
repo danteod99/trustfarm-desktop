@@ -1,7 +1,7 @@
 [package]
-name = "TikFarm"
+name = "TrustFarm"
 version = "1.0.0"
-description = "TikTok Matrix System by tikfarm.com"
+description = "TikTok Matrix System by trustfarm.com"
 authors = ["niostack"]
 repository = ""
 edition = "2021"

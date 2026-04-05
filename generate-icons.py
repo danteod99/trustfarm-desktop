@@ -32,14 +32,14 @@ def create_icon(size, output_path):
     y = int(size * 0.12)
     draw.text((x, y), text_large, fill=(255, 255, 255, 255), font=font_large)
 
-    # Draw "tikfarm" smaller text below
+    # Draw "trustfarm" smaller text below
     try:
         font_size_small = int(size * 0.13)
         font_small = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", font_size_small)
     except:
         font_small = ImageFont.load_default()
 
-    text_small = "tikfarm"
+    text_small = "trustfarm"
     bbox2 = draw.textbbox((0, 0), text_small, font=font_small)
     tw2 = bbox2[2] - bbox2[0]
     x2 = (size - tw2) // 2
@@ -71,14 +71,14 @@ def create_ico(sizes, output_path):
                 font_small = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", int(s * 0.13))
             except:
                 font_small = ImageFont.load_default()
-            bbox2 = draw.textbbox((0, 0), "tikfarm", font=font_small)
+            bbox2 = draw.textbbox((0, 0), "trustfarm", font=font_small)
             tw2 = bbox2[2] - bbox2[0]
-            draw.text(((s - tw2) // 2, int(s * 0.15) + th + int(s * 0.05)), "tikfarm", fill=(255, 255, 255, 230), font=font_small)
+            draw.text(((s - tw2) // 2, int(s * 0.15) + th + int(s * 0.05)), "trustfarm", fill=(255, 255, 255, 230), font=font_small)
         images.append(img)
     images[0].save(output_path, format='ICO', sizes=[(s, s) for s in sizes], append_images=images[1:])
     print(f"Created {output_path}")
 
-base = "C:/Users/Usuario/tikfarm-desktop"
+base = "C:/Users/Usuario/trustfarm-desktop"
 icons_dir = f"{base}/src-tauri/icons"
 assets_dir = f"{base}/src/assets"
 

@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "TikFarm",
+    "productName": "TrustFarm",
     "version": "2.12.0"
   },
   "tauri": {
@@ -122,7 +122,7 @@
       ],
       "active": true,
       "targets": "all",
-      "identifier": "com.tikfarm",
+      "identifier": "com.trustfarm",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -138,7 +138,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "TikFarm",
+        "title": "TrustFarm",
         "theme": "Light",
         "width": 1024,
         "height": 768,
@@ -150,7 +150,7 @@
       "active": true,
       "dialog": false,
       "endpoints": [
-        "https://api.niostack.com/front-api/check_update?app=tikfarm"
+        "https://api.niostack.com/front-api/check_update?app=trustfarm"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENCNzMyMUE4ODZENTcwOEEKUldTS2NOV0dxQ0Z6eStkaXhiMERsc3c4MWF5Y1R0YUp6Wlo1VE5saWt5bXlVYmV3ejVSQW5PR1cK",
       "windows": {

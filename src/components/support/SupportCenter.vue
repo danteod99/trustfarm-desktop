@@ -462,7 +462,7 @@ export default {
     clientInfoNormalized() {
       const info = this.clientInfo || {}
       return {
-        app_name: info.app_name || info.appName || info.name || 'TikFarm',
+        app_name: info.app_name || info.appName || info.name || 'TrustFarm',
         client_version: info.client_version || info.clientVersion || info.version || '',
         app_version: info.app_version || info.appVersion || info.clientVersion || '',
       }

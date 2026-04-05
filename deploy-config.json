@@ -21,8 +21,8 @@
     ],
     "sites": [
         {
-            "name": "tikfarm",
-            "domain": "tikfarm.com",
+            "name": "trustfarm",
+            "domain": "trustfarm.com",
             "branch": "main",
             "brandReplace": false,
             "deployTo": [
@@ -55,10 +55,10 @@
         },
         {
             "name": "videomagic",
-            "domain": "v.tikfarm.com",
+            "domain": "v.trustfarm.com",
             "branch": "main",
             "brandReplace": false,
-            "repository": "tikfarm/video-magic",
+            "repository": "trustfarm/video-magic",
             "buildCommand": "npm run docs:build",
             "buildOutputDir": "docs/.vitepress/dist",
             "deployTo": [

@@ -338,12 +338,12 @@ export default {
       }
     },
     async saveAccounts() {
-      await setItem('tikfarm_accounts', JSON.stringify(this.accounts));
+      await setItem('trustfarm_accounts', JSON.stringify(this.accounts));
     },
   },
   async mounted() {
     try {
-      const stored = await getItem('tikfarm_accounts');
+      const stored = await getItem('trustfarm_accounts');
       if (stored) {
         this.accounts = JSON.parse(stored);
       }

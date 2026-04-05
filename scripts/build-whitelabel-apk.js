@@ -6,7 +6,7 @@ import { execSync, spawnSync } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const desktopDir = path.resolve(__dirname, '..');
-const androidDir = path.resolve(desktopDir, '..', 'tikfarm-android');
+const androidDir = path.resolve(desktopDir, '..', 'trustfarm-android');
 
 const args = process.argv.slice(2).filter(Boolean);
 const hasFlag = flag => args.includes(flag);
@@ -39,8 +39,8 @@ if (!fs.existsSync(configPath)) {
 }
 
 if (!fs.existsSync(androidDir)) {
-    console.error(`❌ 未找到 tikfarm-android 目录: ${androidDir}`);
-    console.error('👉 请确保 tikfarm-android 与 tikfarm-desktop 在同一父目录下。');
+    console.error(`❌ 未找到 trustfarm-android 目录: ${androidDir}`);
+    console.error('👉 请确保 trustfarm-android 与 trustfarm-desktop 在同一父目录下。');
     process.exit(1);
 }
 
@@ -169,7 +169,7 @@ function updateStringsXml() {
 
 function replacePackageNameInFiles() {
     console.log('🔄 替换所有文件中的包名...');
-    const defaultPackageName = 'com.github.tikfarm';
+    const defaultPackageName = 'com.github.trustfarm';
 
     // Files to process
     const filesToProcess = [
@@ -231,7 +231,7 @@ function replacePackageNameInFiles() {
 
 function renameJavaPackageDirectories() {
     console.log('📁 重命名 Java 包目录...');
-    const defaultPackagePath = 'com/github/tikfarm';
+    const defaultPackagePath = 'com/github/trustfarm';
     const newPackagePath = packageName.replace(/\./g, '/');
 
     const sourceDirs = [
@@ -520,7 +520,7 @@ function printUsage(code) {
     console.log('  node scripts/build-whitelabel-apk.js IgMatrix --verbose');
     console.log('');
     console.log('注意:');
-    console.log('  • 需要 tikfarm-android 仓库在同一父目录下');
+    console.log('  • 需要 trustfarm-android 仓库在同一父目录下');
     console.log('  • 会根据 appName 自动生成 appId 和包名 (com.github.{appId})');
     console.log('  • APK 文件会以包名命名');
     process.exit(code);
