@@ -1,0 +1,10 @@
+/Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/deps/unicase-8977864fdbb5879c.d: /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/lib.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/ascii.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/unicode/mod.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/unicode/map.rs
+
+/Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/deps/libunicase-8977864fdbb5879c.rlib: /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/lib.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/ascii.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/unicode/mod.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/unicode/map.rs
+
+/Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/deps/libunicase-8977864fdbb5879c.rmeta: /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/lib.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/ascii.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/unicode/mod.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/unicode/map.rs
+
+/Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/lib.rs:
+/Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/ascii.rs:
+/Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/unicode/mod.rs:
+/Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicase-2.9.0/src/unicode/map.rs:

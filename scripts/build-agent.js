@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Determine the trustfarm-agent directory path
-const agentDir = resolve(__dirname, '..', '..', 'trustfarm-agent');
+const agentDir = resolve(__dirname, '..', 'trustfarm-agent');
 const isWindows = platform() === 'win32';
 const isMac = platform() === 'darwin';
 const args = process.argv.slice(2);

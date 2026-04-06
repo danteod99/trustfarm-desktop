@@ -1,0 +1,1 @@
+/Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/trustfarm-agent: /Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/src/adb.rs /Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/src/main.rs /Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/src/scrcpy.rs

@@ -32,6 +32,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.5",
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.2.0",
+    "@supabase/supabase-js": "^2.101.1",
     "@tauri-apps/api": "^1.5.2",
     "@types/jmuxer": "^2.0.7",
     "@yume-chan/scrcpy": "^2.0.1",

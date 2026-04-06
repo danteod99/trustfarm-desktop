@@ -1,0 +1,12 @@
+/Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/deps/mime_guess-b166533edf1fe34c.d: /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/lib.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/impl_bin_search.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/mime_types.rs /Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/build/mime_guess-81b3280761137b58/out/mime_types_generated.rs
+
+/Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/deps/libmime_guess-b166533edf1fe34c.rlib: /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/lib.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/impl_bin_search.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/mime_types.rs /Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/build/mime_guess-81b3280761137b58/out/mime_types_generated.rs
+
+/Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/deps/libmime_guess-b166533edf1fe34c.rmeta: /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/lib.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/impl_bin_search.rs /Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/mime_types.rs /Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/build/mime_guess-81b3280761137b58/out/mime_types_generated.rs
+
+/Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/lib.rs:
+/Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/impl_bin_search.rs:
+/Users/danteoliveros/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mime_guess-2.0.5/src/mime_types.rs:
+/Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/build/mime_guess-81b3280761137b58/out/mime_types_generated.rs:
+
+# env-dep:MIME_TYPES_GENERATED_PATH=/Users/danteoliveros/Desktop/Softwares/trustfarm-desktop/trustfarm-agent/target/release/build/mime_guess-81b3280761137b58/out/mime_types_generated.rs

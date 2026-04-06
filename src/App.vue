@@ -1,5 +1,9 @@
 <template>
-  <div class="min-h-screen w-screen bg-base-200 text-base-content overflow-hidden">
+  <!-- Auth Gate -->
+  <TrustLogin v-if="!authenticated" @authenticated="onAuthenticated" />
+
+  <!-- Main App -->
+  <div v-else class="min-h-screen w-screen bg-base-200 text-base-content overflow-hidden">
     <TitleBar :supportUnreadCount="supportUnreadCount" />
     <div class="flex flex-row items-stretch gap-3 mt-12 h-[calc(100vh-3rem)] w-full px-3 overflow-hidden">
       <Sidebar :devices="devices" :settings="settings" :groups="groups" :selecedDevices="selecedDevices"
@@ -10,7 +14,7 @@
     </div>
     <AppDialog :devices="devices" :settings="settings" :selecedDevices="selecedDevices" />
   </div>
-  <Notifications />
+  <Notifications v-if="authenticated" />
 
 </template>
 
@@ -20,6 +24,7 @@ import Sidebar from './components/Sidebar.vue'
 import AppDialog from './AppDialog.vue'
 import ManageDevices from './components/device/ManageDevices.vue'
 import Notifications from './components/Notifications.vue';
+import TrustLogin from './components/TrustLogin.vue';
 import { invoke } from '@tauri-apps/api/tauri'
 import { getItem } from './utils/storage.js';
 import {
@@ -37,10 +42,14 @@ export default {
     Sidebar,
     AppDialog,
     ManageDevices,
-    Notifications
+    Notifications,
+    TrustLogin
   },
   data() {
     return {
+      authenticated: false,
+      currentUser: null,
+      userTier: 'free',
       devices: [],
       settings: {},
       groups: [],
@@ -74,6 +83,12 @@ export default {
   },
 
   methods: {
+    onAuthenticated({ user, tier }) {
+      this.currentUser = user
+      this.userTier = tier
+      this.authenticated = true
+      console.log(`[Auth] Logged in as ${user.email}, tier: ${tier}`)
+    },
     async initializeSupportUnread() {
       try {
         const state = await getSupportUnreadState();
