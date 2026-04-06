@@ -461,113 +461,14 @@ pub async fn process_lib_update(app_handle: &AppHandle, lib: &LibInfo) -> Result
     Ok(true)
 }
 
-/// Check for Tauri application updates
+/// Check for Tauri application updates (disabled)
 #[allow(dead_code)]
 pub async fn check_tauri_update(_app_handle: &AppHandle) -> Result<TauriUpdateInfo, String> {
-    // Updater disabled for now
-    return Ok(TauriUpdateInfo { should_update: false, version: None, date: None, body: None });
-    /*
-    log::info!("Checking for Tauri application updates...");
-
-    let status = UpdateStatus {
-        status: "checking".to_string(),
-        message: "Checking application update...".to_string(),
-        lib_name: None,
-    };
-    status.emit(app_handle);
-
-    match app_handle.updater().check().await {
-        Ok(update) => {
-            if update.is_update_available() {
-                log::info!(
-                    "Update available: version {}, date: {:?}",
-                    update.latest_version(),
-                    update.date()
-                );
-
-                Ok(TauriUpdateInfo {
-                    should_update: true,
-                    version: Some(update.latest_version().to_string()),
-                    date: update.date().map(|d| d.to_string()),
-                    body: update.body().map(|b| b.to_string()),
-                })
-            } else {
-                log::info!("No application update available");
-                Ok(TauriUpdateInfo {
-                    should_update: false,
-                    version: None,
-                    date: None,
-                    body: None,
-                })
-            }
-        }
-        Err(e) => {
-            let error_msg = format!("Failed to check for updates: {}", e);
-            log::error!("{}", error_msg);
-            Err(error_msg)
-        }
-    }
+    Ok(TauriUpdateInfo { should_update: false, version: None, date: None, body: None })
 }
 
-*/
-
-/// Install Tauri application update and relaunch
+/// Install Tauri application update and relaunch (disabled)
 #[allow(dead_code)]
 pub async fn install_and_relaunch_update(_app_handle: &AppHandle) -> Result<(), String> {
-    return Err("Updater disabled".to_string());
-    /*
-    log::info!("Installing Tauri application update...");
-
-    let status = UpdateStatus {
-        status: "downloading".to_string(),
-        message: "Downloading application update...".to_string(),
-        lib_name: Some("app".to_string()),
-    };
-    status.emit(app_handle);
-
-    match app_handle.updater().check().await {
-        Ok(update) => {
-            if update.is_update_available() {
-                log::info!("Downloading and installing update...");
-
-                let status = UpdateStatus {
-                    status: "installing".to_string(),
-                    message: "Installing application update...".to_string(),
-                    lib_name: Some("app".to_string()),
-                };
-                status.emit(app_handle);
-
-                match update.download_and_install().await {
-                    Ok(_) => {
-                        log::info!("Update installed successfully, relaunching...");
-
-                        let status = UpdateStatus {
-                            status: "completed".to_string(),
-                            message: "Update completed, relaunching...".to_string(),
-                            lib_name: Some("app".to_string()),
-                        };
-                        status.emit(app_handle);
-
-                        // Relaunch the application
-                        app_handle.restart();
-                    }
-                    Err(e) => {
-                        let error_msg = format!("Failed to install update: {}", e);
-                        log::error!("{}", error_msg);
-                        return Err(error_msg);
-                    }
-                }
-            } else {
-                return Err("No update available to install".to_string());
-            }
-        }
-        Err(e) => {
-            let error_msg = format!("Failed to check for updates: {}", e);
-            log::error!("{}", error_msg);
-            return Err(error_msg);
-        }
-    }
-
-    Ok(())
-    */
+    Err("Updater disabled".to_string())
 }
