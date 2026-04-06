@@ -152,7 +152,7 @@
       }
     ],
     "updater": {
-      "active": true,
+      "active": false,
       "dialog": false,
       "endpoints": [
         "https://api.niostack.com/front-api/check_update?app=trustfarm"

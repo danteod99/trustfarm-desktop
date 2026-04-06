@@ -30,21 +30,11 @@
 
     <!-- 帮助区域 - 与系统控制分开 -->
     <div class="flex items-center gap-3 mr-4 pr-4 border-r-2 border-base-300/60" v-if="agentStarted">
-      <!-- 支持工单入口 - Enhanced with text label and visual styling -->
-      <button v-if="showSupportEntry" @click="openSupportDialog" :class="[
-        'relative flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 font-medium',
-        'border-2 hover:shadow-lg',
-        hasSupportUnread
-          ? 'border-error/40 bg-error/10 hover:bg-error/20 hover:border-error text-error'
-          : 'border-primary/30 bg-linear-to-r from-primary/5 to-secondary/5 hover:border-primary hover:from-primary/10 hover:to-secondary/10 text-base-content'
-      ]" :title="$t('supportEntryTitle')">
-        <font-awesome-icon icon="fa-solid fa-headset"
-          :class="['h-5 w-5 transition-colors', hasSupportUnread ? 'text-error animate-pulse' : '']" />
+      <!-- WhatsApp Support -->
+      <button @click="openWhatsAppSupport"
+        class="relative flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 font-medium border-2 hover:shadow-lg border-success/30 bg-success/5 hover:border-success hover:bg-success/10 text-base-content">
+        <font-awesome-icon icon="fa-brands fa-whatsapp" class="h-5 w-5 text-success" />
         <span class="text-sm">{{ $t('support') }}</span>
-        <span v-if="hasSupportUnread"
-          class="ml-1 px-2 py-0.5 rounded-full bg-error text-error-content text-xs font-bold shadow-md">
-          {{ supportBadgeText }}
-        </span>
       </button>
     </div>
 
@@ -660,6 +650,10 @@ export default {
 
     openSupportDialog() {
       this.$emiter('showDialog', { name: 'support' })
+    },
+    async openWhatsAppSupport() {
+      const { open } = await import('@tauri-apps/api/shell')
+      await open('https://wa.me/51922578858?text=Hola%2C%20necesito%20soporte%20con%20TrustFarm')
     },
 
     onWhiteLabelConfigUpdated(config) {
