@@ -36,7 +36,6 @@ tauri = { version = "1.5", features = [
     "fs-all",
     "os-all",
     "dialog-all",
-    "updater",
     "app-all",
     "shell-open",
 ] }

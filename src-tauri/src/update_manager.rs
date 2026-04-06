@@ -462,7 +462,11 @@ pub async fn process_lib_update(app_handle: &AppHandle, lib: &LibInfo) -> Result
 }
 
 /// Check for Tauri application updates
-pub async fn check_tauri_update(app_handle: &AppHandle) -> Result<TauriUpdateInfo, String> {
+#[allow(dead_code)]
+pub async fn check_tauri_update(_app_handle: &AppHandle) -> Result<TauriUpdateInfo, String> {
+    // Updater disabled for now
+    return Ok(TauriUpdateInfo { should_update: false, version: None, date: None, body: None });
+    /*
     log::info!("Checking for Tauri application updates...");
 
     let status = UpdateStatus {
@@ -505,8 +509,13 @@ pub async fn check_tauri_update(app_handle: &AppHandle) -> Result<TauriUpdateInf
     }
 }
 
+*/
+
 /// Install Tauri application update and relaunch
-pub async fn install_and_relaunch_update(app_handle: &AppHandle) -> Result<(), String> {
+#[allow(dead_code)]
+pub async fn install_and_relaunch_update(_app_handle: &AppHandle) -> Result<(), String> {
+    return Err("Updater disabled".to_string());
+    /*
     log::info!("Installing Tauri application update...");
 
     let status = UpdateStatus {
@@ -560,4 +569,5 @@ pub async fn install_and_relaunch_update(app_handle: &AppHandle) -> Result<(), S
     }
 
     Ok(())
+    */
 }
