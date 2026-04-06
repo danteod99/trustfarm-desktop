@@ -132,7 +132,12 @@
       ]
     },
     "security": {
-      "csp": null
+      "csp": null,
+      "dangerousRemoteDomainIpcAccess": [
+        { "scheme": "https", "domain": "accounts.google.com", "windows": ["google-oauth"], "enableTauriAPI": false },
+        { "scheme": "https", "domain": "www.trustmind.online", "windows": ["google-oauth"], "enableTauriAPI": false },
+        { "scheme": "https", "domain": "jlxaubqvgjahcsnotvih.supabase.co", "windows": ["google-oauth"], "enableTauriAPI": false }
+      ]
     },
     "windows": [
       {
