@@ -12,8 +12,8 @@
 
 <script>
 import Device from './Device.vue'
-const DEFAULT_BATCH_SIZE = 1
-const DEFAULT_RENDER_INTERVAL = 300
+const DEFAULT_BATCH_SIZE = 20
+const DEFAULT_RENDER_INTERVAL = 50
 
 export default {
     name: 'DeviceGrid',

@@ -331,26 +331,26 @@ export default {
           this.devices.map(d => [d.real_serial, d])
         );
 
-        // Build the final devices list based on API response
-        const finalDevices = [];
+        // Load sort values for NEW devices in parallel (not sequentially)
+        const newSerials = newDevices.filter(d => !existingDevicesMap.has(d.real_serial));
+        const sortPromises = newSerials.map(d => getItem(`sort_${d.real_serial}`).catch(() => '0'));
+        const sortValues = await Promise.all(sortPromises);
+        const sortMap = new Map(newSerials.map((d, i) => [d.real_serial, Number(sortValues[i] ?? '0')]));
 
-        for (const newDevice of newDevices) {
+        // Build the final devices list based on API response
+        const finalDevices = newDevices.map(newDevice => {
           const existingDevice = existingDevicesMap.get(newDevice.real_serial);
           if (existingDevice) {
-            // Update existing device properties while preserving local state
-            const updatedDevice = {
+            return {
               ...newDevice,
               sort: existingDevice.sort ?? 0,
               task_status: existingDevice.task_status ?? newDevice.task_status,
             };
-            finalDevices.push(updatedDevice);
           } else {
-            // New device - load sort from storage
-            const storedSort = await getItem(`sort_${newDevice.real_serial}`);
-            newDevice.sort = Number(storedSort ?? '0');
-            finalDevices.push(newDevice);
+            newDevice.sort = sortMap.get(newDevice.real_serial) ?? 0;
+            return newDevice;
           }
-        }
+        });
 
         // Sort the devices
         finalDevices.sort((a, b) => {
@@ -366,7 +366,7 @@ export default {
         this.devices.splice(0, this.devices.length, ...finalDevices);
 
       } catch (error) {
-        console.error('获取设备列表失败:', error);
+        console.error('Error fetching devices:', error);
       }
     },
 
@@ -456,7 +456,11 @@ export default {
         console.log("Force reloading devices as requested");
         this.devices = [];
       }
-      await this.getDevices();
+      // Debounce: avoid rapid successive reloads
+      if (this._deviceReloadTimer) clearTimeout(this._deviceReloadTimer);
+      this._deviceReloadTimer = setTimeout(async () => {
+        await this.getDevices();
+      }, e.payload?.force ? 0 : 500);
     }));
     // Listen to reload running tasks events
     this.listeners.push(await this.$listen('reload_running_tasks', async () => {
