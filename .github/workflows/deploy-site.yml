@@ -1,0 +1,265 @@
+# Deploy Site Workflow
+# Deploys a site to VPS servers
+name: Deploy Site
+run-name: ${{ github.actor }} is deploying ${{ github.event.inputs.group || 'all sites' }} 🚀
+
+on:
+  workflow_dispatch:
+    inputs:
+      # TikFarm = tikfarm + igmatrix + ytmatrix; VideoMagic = videomagic only; empty = all
+      group:
+        description: "Site group to deploy (leave empty to deploy all sites)"
+        required: false
+        type: choice
+        options:
+          - ""
+          - TikFarm
+          - VideoMagic
+
+      server:
+        description: "Target server (leave empty to deploy to all configured servers for this site)"
+        required: false
+        type: choice
+        options:
+          - ""
+          - server-us
+          - server-dublin
+          - server-sgp
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      sites: ${{ steps.get-sites.outputs.sites }}
+      deployments: ${{ steps.get-sites.outputs.deployments }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: tikfarm/tikfarm-pro
+          token: ${{ secrets.REPO_TOKEN }}
+          ref: main
+          path: tikfarm-pro
+
+      - name: Determine target sites and deployments
+        id: get-sites
+        working-directory: tikfarm-pro
+        run: |
+          CONFIG=$(cat deploy-config.json)
+          SELECTED_GROUP="${{ github.event.inputs.group }}"
+          SELECTED_SERVER="${{ github.event.inputs.server }}"
+
+          # Map group to site name filter (JSON array, or null for all sites).
+          # Site names must match the 'name' field in deploy-config.json.
+          if [[ "$SELECTED_GROUP" == "TikFarm" ]]; then
+            SITE_FILTER='["tikfarm", "igmatrix", "ytmatrix"]'
+          elif [[ "$SELECTED_GROUP" == "VideoMagic" ]]; then
+            SITE_FILTER='["videomagic"]'
+          else
+            SITE_FILTER='null'
+          fi
+
+          # Build list of sites to deploy
+          SITES=$(echo "$CONFIG" | jq -c \
+            --argjson filter "$SITE_FILTER" \
+            '[.sites[] | select($filter == null or (.name as $n | $filter | index($n) != null)) | {name: .name, config: .}]')
+
+          # Build deployment matrix
+          if [[ -n "$SELECTED_SERVER" ]]; then
+            # Deploy to specific server
+            DEPLOYMENTS=$(echo "$CONFIG" | jq -c \
+              --argjson filter "$SITE_FILTER" \
+              --arg server "$SELECTED_SERVER" \
+              '. as $root | [
+                .sites[] | select($filter == null or (.name as $n | $filter | index($n) != null)) | . as $site |
+                ($root.servers[] | select(.id == $server)) as $srv |
+                {
+                  site_name: $site.name,
+                  site_config: $site,
+                  server: $srv
+                }
+              ]')
+          else
+            # Deploy to each site's configured servers
+            DEPLOYMENTS=$(echo "$CONFIG" | jq -c \
+              --argjson filter "$SITE_FILTER" \
+              '. as $root | [
+                .sites[] | select($filter == null or (.name as $n | $filter | index($n) != null)) | . as $site |
+                .deployTo as $deployTo |
+                ($root.servers[] | select(.id as $id | $deployTo | index($id))) as $srv |
+                {
+                  site_name: $site.name,
+                  site_config: $site,
+                  server: $srv
+                }
+              ]')
+          fi
+
+          # Validate not empty
+          if [[ -z "$SITES" || "$SITES" == "[]" || "$SITES" == "null" ]]; then
+            echo "Error: No sites found for deployment"
+            exit 1
+          fi
+
+          if [[ -z "$DEPLOYMENTS" || "$DEPLOYMENTS" == "[]" || "$DEPLOYMENTS" == "null" ]]; then
+            echo "Error: No deployments found"
+            exit 1
+          fi
+
+          echo "sites=$SITES" >> $GITHUB_OUTPUT
+          echo "deployments=$DEPLOYMENTS" >> $GITHUB_OUTPUT
+          echo "Sites to build: $SITES"
+          echo "Deployments to execute: $DEPLOYMENTS"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: prepare
+    strategy:
+      matrix:
+        site: ${{ fromJson(needs.prepare.outputs.sites) }}
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: tikfarm/tikfarm-pro
+          token: ${{ secrets.REPO_TOKEN }}
+          ref: main
+          path: tikfarm-pro
+
+      - name: Determine repository and checkout
+        working-directory: tikfarm-pro
+        run: |
+          REPOSITORY=$(echo '${{ toJson(matrix.site.config) }}' | jq -r '.repository // empty')
+
+          if [[ -n "$REPOSITORY" ]]; then
+            echo "Using external repository: $REPOSITORY"
+            echo "CHECKOUT_PATH=site-source" >> $GITHUB_ENV
+            echo "EXTERNAL_REPO=$REPOSITORY" >> $GITHUB_ENV
+          else
+            echo "Using default repository (website directory)"
+            echo "CHECKOUT_PATH=tikfarm-pro/website" >> $GITHUB_ENV
+            echo "EXTERNAL_REPO=" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout external repository if needed
+        if: env.EXTERNAL_REPO != ''
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.EXTERNAL_REPO }}
+          path: site-source
+          token: ${{ secrets.REPO_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "${{ env.CHECKOUT_PATH }}/package-lock.json"
+
+      - name: Install dependencies
+        run: cd ${{ env.CHECKOUT_PATH }} && npm ci
+
+      - name: Run brand replacement if needed
+        if: env.EXTERNAL_REPO == ''
+        working-directory: tikfarm-pro
+        run: |
+          cd website
+          BRAND_REPLACE=$(echo '${{ toJson(matrix.site.config) }}' | jq -r '.brandReplace')
+
+          if [[ "$BRAND_REPLACE" == "true" ]]; then
+            echo "Running brand replacement..."
+            node ../scripts/replace-brand.js
+          else
+            echo "Brand replacement not needed for this site"
+          fi
+
+      - name: Build project
+        run: |
+          cd ${{ env.CHECKOUT_PATH }}
+
+          BUILD_COMMAND=$(echo '${{ toJson(matrix.site.config) }}' | jq -r '.buildCommand // "npm run build"')
+          echo "Running build command: $BUILD_COMMAND"
+
+          # Validate build command - only allow npm/yarn commands
+          if [[ ! "$BUILD_COMMAND" =~ ^(npm|yarn|pnpm)($|[[:space:]]) ]]; then
+            echo "Error: Invalid build command. Only npm, yarn, or pnpm commands are allowed."
+            exit 1
+          fi
+
+          $BUILD_COMMAND
+
+      - name: Create deployment archive
+        run: |
+          WORKSPACE="${{ github.workspace }}"
+          CHECKOUT_PATH="${{ env.CHECKOUT_PATH }}"
+          BUILD_OUTPUT_DIR=$(echo '${{ toJson(matrix.site.config) }}' | jq -r '.buildOutputDir // "build"')
+
+          echo "Using build output directory: $BUILD_OUTPUT_DIR"
+          echo "Workspace: $WORKSPACE"
+          echo "Checkout path: $CHECKOUT_PATH"
+
+          # Create archive from the build output directory
+          cd "$WORKSPACE/$CHECKOUT_PATH/$BUILD_OUTPUT_DIR"
+          tar -czf "$WORKSPACE/build-${{ matrix.site.name }}.tar.gz" .
+
+          # Verify archive was created
+          ls -lh "$WORKSPACE/build-${{ matrix.site.name }}.tar.gz"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact-${{ matrix.site.name }}
+          path: build-${{ matrix.site.name }}.tar.gz
+          retention-days: 1
+
+  deploy:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        deployment: ${{ fromJson(needs.prepare.outputs.deployments) }}
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: tikfarm/tikfarm-pro
+          token: ${{ secrets.REPO_TOKEN }}
+          ref: main
+          path: tikfarm-pro
+
+      - name: Checkout LinuxConfig repository
+        uses: actions/checkout@v4
+        with:
+          repository: tikfarm/LinuxConfig
+          token: ${{ secrets.REPO_TOKEN }}
+          path: LinuxConfig
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact-${{ matrix.deployment.site_name }}
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Deploy to ${{ matrix.deployment.server.id }}
+        env:
+          SITE: ${{ matrix.deployment.site_name }}
+          CONFIG_FILE: ./tikfarm-pro/deploy-config.json
+          SSH_KEY_FILE: ~/.ssh/deploy_key
+        run: |
+          echo "🚀 Deploying $SITE to ${{ matrix.deployment.server.id }} (${{ matrix.deployment.server.host }})"
+          chmod +x ./LinuxConfig/shell/deploy-site.sh
+          ./LinuxConfig/shell/deploy-site.sh \
+            "${{ matrix.deployment.server.id }}" \
+            "$SITE" \
+            "build-$SITE.tar.gz"
+
+      - name: Cleanup SSH Key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

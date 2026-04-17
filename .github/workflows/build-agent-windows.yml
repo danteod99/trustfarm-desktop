@@ -1,0 +1,121 @@
+name: Build Script - Windows
+run-name: ${{ github.actor }} is building Script (Windows) 🚀
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Version tag (e.g., v1.0.0)"
+        required: true
+        type: string
+      branch:
+        description: "Branch to build from"
+        required: false
+        default: "main"
+        type: string
+      build_target:
+        description: "Build target"
+        required: false
+        default: "script"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-script-windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        target: [x86_64-pc-windows-msvc]
+
+    steps:
+      - name: Checkout tikfarm-pro private repository
+        uses: actions/checkout@v3
+        with:
+          repository: tikfarm/tikfarm-pro
+          token: ${{ secrets.REPO_TOKEN }}
+          ref: ${{ inputs.branch }}
+          path: tikfarm-pro
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~\.cargo\registry
+            ~\.cargo\git
+            tikfarm-pro\target\${{ matrix.target }}
+          key: ${{ runner.os }}-script-cargo-${{ matrix.target }}-${{ hashFiles('tikfarm-pro/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-script-cargo-${{ matrix.target }}-
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install target platform
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Build script
+        working-directory: tikfarm-pro
+        run: cargo build -p script --release --target ${{ matrix.target }}
+
+      - name: Prepare bin directory
+        run: |
+          New-Item -ItemType Directory -Force -Path ./tikfarm-pro/target/${{ matrix.target }}/release/bin
+
+          # Ensure bin folder is clean to avoid uploading stale binaries
+          if (Test-Path "./tikfarm-pro/target/${{ matrix.target }}/release/bin/*") {
+            Remove-Item -Force -Recurse ./tikfarm-pro/target/${{ matrix.target }}/release/bin/*
+          }
+
+          if (Test-Path "./tikfarm-pro/target/${{ matrix.target }}/release/script.exe") {
+            Copy-Item ./tikfarm-pro/target/${{ matrix.target }}/release/script.exe ./tikfarm-pro/target/${{ matrix.target }}/release/bin/
+          }
+        shell: pwsh
+
+      - name: Upload to R2
+        uses: ryand56/r2-upload-action@v1.4
+        with:
+          r2-account-id: ${{ secrets.R2_ACCOUNT_ID_NIO }}
+          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID_NIO }}
+          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY_NIO }}
+          r2-bucket: matrix
+          source-dir: .\tikfarm-pro\target\${{ matrix.target }}\release\bin
+          destination-dir: ${{ matrix.target }}
+
+      - name: Update Library Version
+        run: |
+          $VERSION = "${{ inputs.version }}"
+          $PLATFORM = "windows"
+
+          # Calculate MD5 for script
+          $SCRIPT_MD5 = ""
+          if (Test-Path "./tikfarm-pro/target/${{ matrix.target }}/release/bin/script.exe") {
+            $SCRIPT_MD5 = (Get-FileHash -Path "./tikfarm-pro/target/${{ matrix.target }}/release/bin/script.exe" -Algorithm MD5).Hash.ToLower()
+            Write-Host "Script MD5: $SCRIPT_MD5"
+          }
+
+          $SCRIPT_UPDATE_DATA = [PSCustomObject]@{
+            name        = "script"
+            platform    = $PLATFORM
+            downloadUrl = "https://api.tikfarm.com/front-api/release/${{ matrix.target }}/script.exe"
+            version     = $VERSION
+            app         = "TikFarm"
+            md5         = $SCRIPT_MD5
+          } | ConvertTo-Json -Compress
+
+          Write-Host "Updating script library..."
+          try {
+            $headers = @{
+              "Content-Type" = "application/json"
+              "Authorization" = "Bearer ${{ secrets.API_KEY }}"
+            }
+            Invoke-RestMethod -Uri "https://api.tikfarm.com/ci/update_lib_v2" -Method Post -Headers $headers -Body $SCRIPT_UPDATE_DATA
+            Write-Host "Script library updated successfully"
+          } catch {
+            Write-Host "Error updating script library: $_"
+            exit 1
+          }
+
+          Write-Host "Updated script library for $PLATFORM to $VERSION"
+        shell: pwsh

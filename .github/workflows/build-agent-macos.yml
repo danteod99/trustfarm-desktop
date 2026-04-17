@@ -1,0 +1,140 @@
+name: Build Script - macOS
+run-name: ${{ github.actor }} is building Script (macOS) 🚀
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Version tag (e.g., v1.0.0)"
+        required: true
+        type: string
+      branch:
+        description: "Branch to build from"
+        required: false
+        default: "main"
+        type: string
+      build_target:
+        description: "Build target"
+        required: false
+        default: "script"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-script-macos:
+    # Use ARM runner (macos-14) - cheaper and faster than Intel runner
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout tikfarm-pro private repository
+        uses: actions/checkout@v3
+        with:
+          repository: tikfarm/tikfarm-pro
+          token: ${{ secrets.REPO_TOKEN }}
+          ref: ${{ inputs.branch }}
+          path: tikfarm-pro
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            tikfarm-pro/target
+          key: ${{ runner.os }}-script-cargo-universal-${{ hashFiles('tikfarm-pro/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-script-cargo-universal-
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install target platforms
+        run: |
+          rustup target add x86_64-apple-darwin
+          rustup target add aarch64-apple-darwin
+
+      - name: Build ARM64
+        working-directory: tikfarm-pro
+        run: cargo build -p script --release --target aarch64-apple-darwin
+
+      - name: Build x86_64
+        working-directory: tikfarm-pro
+        run: cargo build -p script --release --target x86_64-apple-darwin
+
+      - name: Prepare bin directories
+        run: |
+          # Prepare ARM64 binaries
+          mkdir -p ./tikfarm-pro/target/aarch64-apple-darwin/release/bin
+          rm -f ./tikfarm-pro/target/aarch64-apple-darwin/release/bin/* || true
+          if [ -f "./tikfarm-pro/target/aarch64-apple-darwin/release/script" ]; then
+            cp ./tikfarm-pro/target/aarch64-apple-darwin/release/script ./tikfarm-pro/target/aarch64-apple-darwin/release/bin/
+          fi
+
+          # Prepare x86_64 binaries
+          mkdir -p ./tikfarm-pro/target/x86_64-apple-darwin/release/bin
+          rm -f ./tikfarm-pro/target/x86_64-apple-darwin/release/bin/* || true
+          if [ -f "./tikfarm-pro/target/x86_64-apple-darwin/release/script" ]; then
+            cp ./tikfarm-pro/target/x86_64-apple-darwin/release/script ./tikfarm-pro/target/x86_64-apple-darwin/release/bin/
+          fi
+
+      - name: Upload ARM64 to R2
+        uses: ryand56/r2-upload-action@v1.4
+        with:
+          r2-account-id: ${{ secrets.R2_ACCOUNT_ID_NIO }}
+          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID_NIO }}
+          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY_NIO }}
+          r2-bucket: matrix
+          source-dir: ./tikfarm-pro/target/aarch64-apple-darwin/release/bin
+          destination-dir: aarch64-apple-darwin
+
+      - name: Upload x86_64 to R2
+        uses: ryand56/r2-upload-action@v1.4
+        with:
+          r2-account-id: ${{ secrets.R2_ACCOUNT_ID_NIO }}
+          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID_NIO }}
+          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY_NIO }}
+          r2-bucket: matrix
+          source-dir: ./tikfarm-pro/target/x86_64-apple-darwin/release/bin
+          destination-dir: x86_64-apple-darwin
+
+      - name: Update Library Versions
+        run: |
+          VERSION="${{ inputs.version }}"
+
+          update_lib() {
+            local NAME=$1
+            local PLATFORM=$2
+            local TARGET=$3
+
+            local MD5=""
+            local BIN_PATH="./tikfarm-pro/target/$TARGET/release/bin/$NAME"
+            if [ -f "$BIN_PATH" ]; then
+              MD5=$(md5 -q "$BIN_PATH" 2>/dev/null || md5sum "$BIN_PATH" | cut -d' ' -f1)
+              echo "$NAME MD5 ($PLATFORM): $MD5"
+            fi
+
+            local UPDATE_DATA=$(cat <<EOF
+          {
+            "name": "$NAME",
+            "platform": "$PLATFORM",
+            "downloadUrl": "https://api.tikfarm.com/front-api/release/$TARGET/$NAME",
+            "version": "$VERSION",
+            "app": "TikFarm",
+            "md5": "$MD5"
+          }
+          EOF
+            )
+
+            echo "Updating $NAME for $PLATFORM..."
+            curl -X POST \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${{ secrets.API_KEY }}" \
+              -d "$UPDATE_DATA" \
+              "https://api.tikfarm.com/ci/update_lib_v2"
+          }
+
+          update_lib "script" "mac-arm" "aarch64-apple-darwin"
+          update_lib "script" "mac-intel" "x86_64-apple-darwin"
+
+          echo "Updated script library versions to $VERSION"

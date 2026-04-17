@@ -1,0 +1,311 @@
+name: Deploy TikFarm API Rust Service
+run-name: ${{ github.actor }} is deploying TikFarm API Rust Service 🚀
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag (e.g., v1.0.0)"
+        required: true
+        type: string
+      branch:
+        description: "Branch to build from in tikfarm-api-rs"
+        required: false
+        default: "main"
+        type: string
+      server:
+        description: "Target server (leave empty for all servers)"
+        required: false
+        type: choice
+        options:
+          - ""
+          - server-us
+          - server-dublin
+          - server-sgp
+      deploy_geolite:
+        description: "Deploy GeoLite2-Country.mmdb file (enable for first deployment or updates)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tikfarm-pro private repository
+        uses: actions/checkout@v4
+        with:
+          repository: tikfarm/tikfarm-pro
+          token: ${{ secrets.REPO_TOKEN }}
+          ref: ${{ inputs.branch }}
+
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if tag already exists on remote
+          if git ls-remote --tags origin | grep -q "refs/tags/${{ inputs.version }}$"; then
+            echo "Tag ${{ inputs.version }} already exists on remote, skipping tag creation"
+          else
+            git tag -a "${{ inputs.version }}" -m "Release ${{ inputs.version }}"
+            git push origin "${{ inputs.version }}"
+            echo "Tag ${{ inputs.version }} created and pushed successfully"
+          fi
+
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      servers: ${{ steps.get-servers.outputs.servers }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine target servers
+        id: get-servers
+        run: |
+          CONFIG=$(cat deploy-config.json)
+          SELECTED_SERVER="${{ github.event.inputs.server }}"
+
+          if [[ -n "$SELECTED_SERVER" ]]; then
+            # Use specific server
+            SERVERS=$(echo "$CONFIG" | jq -c --arg target "$SELECTED_SERVER" '[.servers[] | select(.id == $target)]')
+          else
+            # Use all servers
+            SERVERS=$(echo "$CONFIG" | jq -c '.servers')
+          fi
+
+          # Validate servers is not empty
+          if [[ -z "$SERVERS" || "$SERVERS" == "[]" || "$SERVERS" == "null" ]]; then
+            echo "Error: No servers found"
+            exit 1
+          fi
+
+          echo "servers=$SERVERS" >> $GITHUB_OUTPUT
+          echo "Target servers: $SERVERS"
+
+  build:
+    needs: create-tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tikfarm-pro repository
+        uses: actions/checkout@v4
+        with:
+          repository: tikfarm/tikfarm-pro
+          token: ${{ secrets.REPO_TOKEN }}
+          ref: ${{ inputs.branch }}
+          path: tikfarm-pro
+
+      - name: Install Rust toolchain
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --component rustfmt
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            tikfarm-pro/target
+          key: ${{ runner.os }}-cargo-api-rs-${{ hashFiles('tikfarm-pro/Cargo.lock') }}
+
+      - name: Build release
+        run: cd tikfarm-pro && cargo build -p tikfarm-api-rs --release
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: tikfarm-binary
+          path: tikfarm-pro/target/release/tikfarm-api-rs
+
+      - name: Upload static directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: tikfarm-static
+          path: tikfarm-pro/server/src-rs/static/
+          if-no-files-found: warn
+
+      - name: Upload GeoLite2 database
+        if: ${{ inputs.deploy_geolite == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: geolite2-db
+          path: tikfarm-pro/server/src-rs/data/GeoLite2-Country.mmdb
+          if-no-files-found: error
+
+  deploy:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        server: ${{ fromJson(needs.prepare.outputs.servers) }}
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout LinuxConfig repository
+        uses: actions/checkout@v4
+        with:
+          repository: tikfarm/LinuxConfig
+          token: ${{ secrets.REPO_TOKEN }}
+          path: LinuxConfig
+
+      - name: Download binary
+        uses: actions/download-artifact@v4
+        with:
+          name: tikfarm-binary
+
+      - name: Download static directory
+        uses: actions/download-artifact@v4
+        with:
+          name: tikfarm-static
+          path: static/
+
+      - name: Download GeoLite2 database
+        if: ${{ inputs.deploy_geolite == true }}
+        uses: actions/download-artifact@v4
+        with:
+          name: geolite2-db
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Deploy to ${{ matrix.server.id }}
+        env:
+          CONFIG_FILE: deploy-config.json
+          SSH_KEY_FILE: ~/.ssh/deploy_key
+          REMOTE_DIR: /home/deploy/apps/tikfarm-api-rs
+          DEPLOY_GEOLITE: ${{ inputs.deploy_geolite }}
+          ENV_PROD_CONTENT: ${{ secrets.ENV_PROD_CONTENT }}
+        run: |
+          SERVER_ID="${{ matrix.server.id }}"
+          SERVER_HOST="${{ matrix.server.host }}"
+          SERVER_PORT="${{ matrix.server.port }}"
+          SERVER_USER="${{ matrix.server.user }}"
+
+          echo "🚀 Deploying to $SERVER_ID ($SERVER_HOST)"
+
+          # Source common library functions
+          source ./LinuxConfig/shell/lib-common.sh
+
+          # Upload binary
+          log_info "Uploading binary to server"
+          scp_upload "$SERVER_HOST" "$SERVER_PORT" "$SERVER_USER" "$SSH_KEY_FILE" \
+            "tikfarm-api-rs" "tikfarm-api-rs.tmp"
+
+          # Upload static directory if it exists
+          if [[ -d "static" && -n "$(ls -A static 2>/dev/null)" ]]; then
+            log_info "Uploading static directory to server"
+            tar -czf static.tar.gz -C static .
+            scp_upload "$SERVER_HOST" "$SERVER_PORT" "$SERVER_USER" "$SSH_KEY_FILE" \
+              "static.tar.gz" "static.tar.gz.tmp"
+            rm -f static.tar.gz
+          else
+            log_info "No static directory found, skipping"
+          fi
+
+          # Upload GeoLite2 database if enabled
+          if [[ "$DEPLOY_GEOLITE" == "true" ]]; then
+            log_info "Uploading GeoLite2-Country.mmdb to server"
+            scp_upload "$SERVER_HOST" "$SERVER_PORT" "$SERVER_USER" "$SSH_KEY_FILE" \
+              "GeoLite2-Country.mmdb" "GeoLite2-Country.mmdb.tmp"
+          fi
+
+          # Deploy and setup service
+          log_info "Setting up service on server"
+
+          # Create .env file from secret and upload
+          log_info "Creating .env file from secret"
+          echo "$ENV_PROD_CONTENT" > .env.tmp
+          chmod 600 .env.tmp
+          scp_upload "$SERVER_HOST" "$SERVER_PORT" "$SERVER_USER" "$SSH_KEY_FILE" \
+            ".env.tmp" ".env.tmp"
+          rm -f .env.tmp
+
+          ssh -i "$SSH_KEY_FILE" -p "$SERVER_PORT" \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o ConnectTimeout=10 \
+            "$SERVER_USER@$SERVER_HOST" bash -s "$DEPLOY_GEOLITE" << 'EOF'
+          set -euo pipefail
+
+          REMOTE_DIR="/home/deploy/apps/tikfarm-api-rs"
+          DEPLOY_GEOLITE="$1"
+
+          # Move binary to final location
+          echo "Moving binary to $REMOTE_DIR"
+          mkdir -p "$REMOTE_DIR"
+          mv ~/tikfarm-api-rs.tmp "$REMOTE_DIR/tikfarm-api-rs"
+          chmod +x "$REMOTE_DIR/tikfarm-api-rs"
+
+          # Extract static directory if uploaded
+          if [[ -f ~/static.tar.gz.tmp ]]; then
+            echo "Extracting static directory to $REMOTE_DIR/static/"
+            mkdir -p "$REMOTE_DIR/static"
+            tar -xzf ~/static.tar.gz.tmp -C "$REMOTE_DIR/static"
+            rm -f ~/static.tar.gz.tmp
+            echo "Static directory deployed successfully"
+          fi
+
+          # Move GeoLite2 database if enabled
+          if [[ "$DEPLOY_GEOLITE" == "true" ]]; then
+            echo "Moving GeoLite2-Country.mmdb to $REMOTE_DIR/data/"
+            mkdir -p "$REMOTE_DIR/data"
+            mv ~/GeoLite2-Country.mmdb.tmp "$REMOTE_DIR/data/GeoLite2-Country.mmdb"
+            chmod 644 "$REMOTE_DIR/data/GeoLite2-Country.mmdb"
+          fi
+
+          # Move .env file to program directory
+          echo "Moving .env to $REMOTE_DIR/.env"
+          mv ~/.env.tmp "$REMOTE_DIR/.env"
+          chmod 600 "$REMOTE_DIR/.env"
+
+          # Create log directory
+          echo "Creating log directory"
+          sudo mkdir -p /var/log/tikfarm-api-rs
+          sudo chown deploy:deploy /var/log/tikfarm-api-rs
+          sudo chmod 755 /var/log/tikfarm-api-rs
+
+          # Create systemd service
+          echo "Creating systemd service"
+          cat > /tmp/tikfarm-api-rs.service <<'SERVICE'
+          [Unit]
+          Description=TikFarm API Service
+          After=network.target
+
+          [Service]
+          User=deploy
+          WorkingDirectory=/home/deploy/apps/tikfarm-api-rs
+          ExecStart=/home/deploy/apps/tikfarm-api-rs/tikfarm-api-rs
+          Restart=on-failure
+          RestartSec=5
+          Environment=RUST_LOG=info
+          StandardOutput=append:/var/log/tikfarm-api-rs/output.log
+          StandardError=append:/var/log/tikfarm-api-rs/error.log
+
+          [Install]
+          WantedBy=multi-user.target
+          SERVICE
+
+          # Install and restart service
+          echo "Installing and starting systemd service"
+          sudo mv /tmp/tikfarm-api-rs.service /etc/systemd/system/
+          sudo systemctl daemon-reload
+          sudo systemctl enable --now tikfarm-api-rs.service || true
+          sudo systemctl restart tikfarm-api-rs.service
+          echo "✅ Deployment completed!"
+          EOF
+
+          log_success "Deployment to $SERVER_ID completed successfully!"
+
+      - name: Cleanup SSH Key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
