@@ -46,9 +46,12 @@
                 </div>
               </div>
             </div>
-            <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-base-300"
-              v-if="loading">
+            <div class="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center gap-2 bg-base-300 cursor-pointer hover:bg-base-200 transition-colors"
+              v-if="loading"
+              @click="forceReconnect"
+              title="Click to reconnect">
               <font-awesome-icon icon="fa-solid fa-sync-alt" class="w-8 h-8 text-primary animate-spin" />
+              <span class="text-xs text-primary font-semibold opacity-80">{{ $t('tapToReconnect') || 'Click para reconectar' }}</span>
             </div>
             <div class="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-base-300"
               v-if="operating">
@@ -56,6 +59,20 @@
               <span class="text-primary font-bold">{{ $t('operating') }}</span>
             </div>
           </div>
+        </div>
+
+        <!-- Android navigation bar - visible in big view -->
+        <div v-if="big && videoStarted" class="flex items-center justify-center gap-1 bg-base-300 rounded-b-lg py-1.5 px-4"
+          :style="'width:' + width + 'px'">
+          <button class="btn btn-ghost btn-sm flex-1 hover:bg-base-200" @click="navAction('4')" title="Back">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm flex-1 hover:bg-base-200" @click="navAction('3')" title="Home">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm flex-1 hover:bg-base-200" @click="navAction('187')" title="Recent Apps">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+          </button>
         </div>
       </div>
       <RightBars v-if="big" :serial="device.serial" :real_serial="device.real_serial" />
@@ -355,6 +372,9 @@ export default {
       this.contextMenuVisible = false;
       await this.$emiter('adbEventData', { args });
     },
+    async navAction(keycode) {
+      await this.$emiter('adbEventData', { args: ['shell', 'input', 'keyevent', keycode] });
+    },
     async ctxInstallApk() {
       this.contextMenuVisible = false;
       const { open } = await import('@tauri-apps/api/dialog');
@@ -592,6 +612,10 @@ export default {
     },
     mouseDownListener(event) {
       if (this.loading || !this.videoStarted) {
+        return
+      }
+      // Ignore right-click - let context menu handle it
+      if (event.button === 2) {
         return
       }
       // 让canvas获得焦点以接收键盘事件
@@ -920,7 +944,7 @@ export default {
 
       try {
         const wsPort = await readTextFile('wsport.txt', { dir: BaseDirectory.AppData });
-        const wsUrl = `ws://localhost:${wsPort}`;
+        const wsUrl = `ws://127.0.0.1:${wsPort}`;
 
         console.log(`${this.no}-${this.device.serial} Creating scrcpy WebSocket connection`);
         this.scrcpy = new WebSocket(wsUrl);
@@ -1098,6 +1122,12 @@ export default {
         }
       }
       return this.gridCardHeight
+    },
+    async forceReconnect() {
+      console.log(`${this.no}-${this.device.serial} forceReconnect triggered`);
+      this.closeScrcpy();
+      this.closeDecoder();
+      await this.syncDisplay();
     },
     async syncDisplay() {
       this.loading = true;

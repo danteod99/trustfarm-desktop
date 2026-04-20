@@ -241,7 +241,7 @@ async fn ws_connection_loop(
             }
         };
 
-        let url = format!("ws://localhost:{}", port);
+        let url = format!("ws://127.0.0.1:{}", port);
 
         // Update state to connecting/reconnecting
         {

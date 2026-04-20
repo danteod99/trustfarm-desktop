@@ -123,7 +123,8 @@
             </div>
 
             <div class="flex items-center gap-3 bg-base-100 rounded-lg p-3 border border-base-200">
-                <label class="font-semibold">{{ $t('generateByChatGPT') }}:</label>
+                <font-awesome-icon icon="fa-solid fa-wand-magic-sparkles" class="text-primary" />
+                <label class="font-semibold">{{ $t('generateByAI') || 'Generate with AI' }}:</label>
                 <input type="checkbox" class="toggle toggle-primary" v-model="localFormData.generate_by_chatgpt" />
             </div>
 
@@ -132,23 +133,39 @@
                     <div class="border border-base-200 rounded-lg p-4 bg-base-100 space-y-3">
                         <div class="flex items-center gap-2 mb-2">
                             <font-awesome-icon icon="fa-solid fa-robot" class="text-info" />
-                            <span class="font-semibold">{{ $t('chatgptSettings') }}</span>
+                            <span class="font-semibold">{{ $t('aiSettings') || 'AI Settings' }}</span>
+                        </div>
+
+                        <!-- AI Provider selector -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">{{ $t('aiProvider') || 'AI Provider' }}</span>
+                            </label>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button v-for="p in aiProviders" :key="p.id"
+                                    class="btn btn-sm"
+                                    :class="selectedAiProvider === p.id ? 'btn-primary' : 'btn-outline'"
+                                    @click="selectAiProvider(p.id)">
+                                    {{ p.label }}
+                                </button>
+                            </div>
                         </div>
 
                         <div class="form-control">
                             <label class="label">
                                 <span class="label-text font-medium">{{ $t('url') }}</span>
                             </label>
-                            <input type="text" class="input input-bordered w-full"
+                            <input type="text" class="input input-bordered w-full input-sm"
                                 placeholder="https://api.openai.com/v1/chat/completions"
                                 v-model="localFormData.chatgpt_settings.url" />
                         </div>
 
                         <div class="form-control">
                             <label class="label">
-                                <span class="label-text font-medium">{{ $t('apiKey') }}</span>
+                                <span class="label-text font-medium">API Key</span>
                             </label>
-                            <input type="password" class="input input-bordered w-full" placeholder="sk-********"
+                            <input type="password" class="input input-bordered w-full input-sm"
+                                :placeholder="selectedAiProvider === 'claude' ? 'sk-ant-...' : selectedAiProvider === 'gemini' ? 'AIza...' : 'sk-...'"
                                 v-model="localFormData.chatgpt_settings.api_key" />
                         </div>
 
@@ -156,23 +173,26 @@
                             <label class="label">
                                 <span class="label-text font-medium">{{ $t('model') }}</span>
                             </label>
-                            <input type="text" class="input input-bordered w-full" placeholder="gpt-4o-mini"
-                                v-model="localFormData.chatgpt_settings.model" />
+                            <select class="select select-bordered select-sm w-full" v-model="localFormData.chatgpt_settings.model">
+                                <optgroup v-for="p in aiProviders" :key="p.id" :label="p.label">
+                                    <option v-for="m in p.models" :key="m" :value="m">{{ m }}</option>
+                                </optgroup>
+                            </select>
                         </div>
 
                         <div class="form-control">
                             <label class="label">
                                 <span class="label-text font-medium">{{ $t('systemPrompt') }}</span>
                             </label>
-                            <textarea class="textarea textarea-bordered w-full h-32"
+                            <textarea class="textarea textarea-bordered w-full h-24 text-sm"
                                 :placeholder="$t('systemPromptTips')" autocomplete="off"
                                 v-model="localFormData.chatgpt_settings.system_prompt"></textarea>
                         </div>
                     </div>
 
-                    <button class="btn btn-primary w-full" @click="testChatGPT">
+                    <button class="btn btn-primary btn-sm w-full" @click="testChatGPT">
                         <font-awesome-icon icon="fa-solid fa-vial" class="mr-2" />
-                        Test ChatGPT
+                        {{ $t('testAI') || 'Test AI' }}
                     </button>
 
                     <div v-if="testResult" class="alert" :class="{
@@ -242,6 +262,29 @@ export default {
             localFormData: {},
             testResult: '',
             testResultStyle: 'text-gray-500',
+            selectedAiProvider: 'openai',
+            aiProviders: [
+                {
+                    id: 'openai', label: 'OpenAI',
+                    url: 'https://api.openai.com/v1/chat/completions',
+                    models: ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1-mini', 'gpt-4.1-nano'],
+                },
+                {
+                    id: 'claude', label: 'Claude',
+                    url: 'https://api.anthropic.com/v1/messages',
+                    models: ['claude-sonnet-4-5-20241022', 'claude-haiku-4-5-20251001'],
+                },
+                {
+                    id: 'gemini', label: 'Gemini',
+                    url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+                    models: ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'],
+                },
+                {
+                    id: 'custom', label: 'Custom',
+                    url: '',
+                    models: ['custom'],
+                },
+            ],
         }
     },
     watch: {
@@ -260,6 +303,14 @@ export default {
         }
     },
     methods: {
+        selectAiProvider(providerId) {
+            this.selectedAiProvider = providerId;
+            const provider = this.aiProviders.find(p => p.id === providerId);
+            if (provider && provider.url) {
+                this.localFormData.chatgpt_settings.url = provider.url;
+                this.localFormData.chatgpt_settings.model = provider.models[0];
+            }
+        },
         async testChatGPT() {
             try {
                 this.testResult = 'Testing...';

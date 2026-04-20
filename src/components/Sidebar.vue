@@ -3,6 +3,51 @@
     class="sidebar relative bg-base-100 flex flex-col w-full max-w-md lg/max-w-md h-full rounded-xl shadow-lg border border-base-200/70">
     <div class="flex-1 overflow-y-auto no-scrollbar px-2 pt-3 pb-4 space-y-4">
 
+      <!-- Promo banner for Free users -->
+      <div v-if="!isPro" class="relative overflow-hidden rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-950 to-blue-950 p-3 cursor-pointer hover:border-cyan-400/50 transition-all"
+        @click="$emiter('LICENSE', { show: true })">
+        <div class="flex items-center gap-3">
+          <div class="shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg">
+            <font-awesome-icon icon="fa-solid fa-rocket" class="h-5 w-5 text-white" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-white">Upgrade to Pro</p>
+            <p class="text-xs text-cyan-300/70 leading-tight">Unlimited devices, all automations, mass DM, AI agent</p>
+          </div>
+          <font-awesome-icon icon="fa-solid fa-chevron-right" class="h-3 w-3 text-cyan-400/60 shrink-0" />
+        </div>
+      </div>
+
+      <!-- Ecosystem banner -->
+      <a href="https://trustmind.online/downloads" target="_blank"
+        class="block rounded-xl border border-base-300/50 bg-gradient-to-r from-base-200 to-base-100 p-3 hover:border-primary/40 transition-all cursor-pointer no-underline">
+        <div class="flex items-center gap-2 mb-2">
+          <font-awesome-icon icon="fa-solid fa-globe" class="h-3 w-3 text-primary" />
+          <span class="text-xs font-bold text-primary uppercase tracking-wider">Trust Ecosystem</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          <div class="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-base-300/30">
+            <div class="w-7 h-7 rounded-md bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center">
+              <font-awesome-icon icon="fa-brands fa-instagram" class="h-3.5 w-3.5 text-white" />
+            </div>
+            <span class="text-[10px] font-medium text-base-content/70">TrustInsta</span>
+          </div>
+          <div class="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-base-300/30">
+            <div class="w-7 h-7 rounded-md bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+              <font-awesome-icon icon="fa-brands fa-facebook" class="h-3.5 w-3.5 text-white" />
+            </div>
+            <span class="text-[10px] font-medium text-base-content/70">TrustFace</span>
+          </div>
+          <div class="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+            <div class="w-7 h-7 rounded-md bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+              <font-awesome-icon icon="fa-solid fa-mobile-screen" class="h-3.5 w-3.5 text-white" />
+            </div>
+            <span class="text-[10px] font-bold text-cyan-400">TrustFarm</span>
+          </div>
+        </div>
+        <p class="text-[10px] text-base-content/50 mt-2 text-center">Bot farms for Instagram, Facebook & Phone Farming</p>
+      </a>
+
       <div class="tabs tabs-md tabs-border border border-base-300 bg-base-500 rounded-md shadow-lg p-2">
         <input type="radio" name="my_tabs_3" class="tab" :aria-label="$t('general')" checked="checked" />
         <div class="tab-content mt-2">
@@ -123,14 +168,23 @@
           <p class="text-sm font-medium truncate">{{ currentUser.name || currentUser.email }}</p>
           <p class="text-xs text-base-content/50 truncate" v-if="currentUser.name">{{ currentUser.email }}</p>
         </div>
+        <button @click="$emiter('LICENSE', { show: true })" class="btn btn-ghost btn-xs" title="Plan">
+          <font-awesome-icon icon="fa-solid fa-crown" class="h-3 w-3 text-yellow-400" />
+        </button>
         <button @click="logout" class="btn btn-ghost btn-xs btn-square" :title="$t('logout') || 'Logout'">
           <font-awesome-icon icon="fa-solid fa-right-from-bracket" class="h-3 w-3" />
         </button>
       </div>
-      <button v-else @click="showLoginDialog" class="btn btn-primary btn-sm w-full gap-2">
-        <font-awesome-icon icon="fa-solid fa-user" class="h-3 w-3" />
-        {{ $t('signIn') || 'Sign in' }}
-      </button>
+      <div v-else class="flex flex-col gap-1.5">
+        <button @click="showLoginDialog" class="btn btn-primary btn-sm w-full gap-2">
+          <font-awesome-icon icon="fa-solid fa-user" class="h-3 w-3" />
+          {{ $t('signIn') || 'Sign in' }}
+        </button>
+        <button @click="$emiter('LICENSE', { show: true })" class="btn btn-outline btn-xs w-full gap-1 text-yellow-500 border-yellow-500/30 hover:bg-yellow-500/10">
+          <font-awesome-icon icon="fa-solid fa-crown" class="h-2.5 w-2.5" />
+          {{ $t('subscribePro') || 'Subscribe to Pro' }}
+        </button>
+      </div>
     </div>
   </div>
 
@@ -240,6 +294,7 @@ export default {
       adTitle: '',
       isRefreshingSelections: false,
       currentUser: null,
+      isPro: false,
       loginStep: 'start',
       loginToken: '',
       loginError: '',
@@ -273,7 +328,7 @@ export default {
       this.$refs.loginDialog.showModal()
     },
     async openLoginBrowser() {
-      await shellOpen('https://trustmind.online/smm/services')
+      await shellOpen('https://trustmind.online/auth/desktop?start=1')
       this.loginStep = 'paste'
     },
     async submitLoginToken() {
@@ -299,6 +354,7 @@ export default {
         if (!user.email) throw new Error('No email found in token')
 
         this.currentUser = user
+        this.isPro = true
         await setJsonItem('trustmind_user', user)
         await this.$emiter('USER_AUTH_CHANGED', { loggedIn: true })
         this.$refs.loginDialog.close()
@@ -310,6 +366,7 @@ export default {
     },
     async logout() {
       this.currentUser = null
+      this.isPro = false
       await removeItem('trustmind_user')
       await this.$emiter('USER_AUTH_CHANGED', { loggedIn: false })
     },
@@ -317,6 +374,7 @@ export default {
       const user = await getJsonItem('trustmind_user')
       if (user && user.email) {
         this.currentUser = user
+        this.isPro = true
       }
     },
     setActiveTab(tab) {
@@ -530,10 +588,21 @@ export default {
         return
       }
 
+      // Free plan: limit to 2 devices per automation run
+      let serials = [...this.selection]
+      if (!this.isPro && serials.length > 2) {
+        serials = serials.slice(0, 2)
+        await this.$emiter('NOTIFY', {
+          type: 'warning',
+          message: 'Free plan: limited to 2 devices. Sign in for unlimited.',
+          timeout: 4000
+        });
+      }
+
       this.$service
         .run_now_by_account({
           script_name: name,
-          serials: this.selection,
+          serials: serials,
           script_args: JSON.stringify(args)
         })
         .then(async (res) => {
@@ -740,6 +809,15 @@ export default {
             type: 'success',
             message: this.$t('commandSendSuccess'),
             timeout: 2000
+          });
+          await this.$emiter('reload_running_tasks', {})
+        })
+        .catch(async (err) => {
+          console.error('stop_task failed', err);
+          await this.$emiter('NOTIFY', {
+            type: 'error',
+            message: (err && err.message) || 'Stop task failed',
+            timeout: 3000
           });
           await this.$emiter('reload_running_tasks', {})
         })

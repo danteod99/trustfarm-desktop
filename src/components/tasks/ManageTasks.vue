@@ -78,6 +78,14 @@
                     <button class="btn btn-xs btn-ghost" @click="showLogs(task)" title="Logs">
                       <font-awesome-icon icon="fa-solid fa-terminal" class="h-3 w-3" />
                     </button>
+                    <button v-if="task.status == '1'" class="btn btn-xs btn-warning" @click="pauseTask(task)"
+                      :title="$t('pause') || 'Pause'">
+                      <font-awesome-icon icon="fa-solid fa-pause" class="h-3 w-3" />
+                    </button>
+                    <button v-if="task.status == '1' && task._paused" class="btn btn-xs btn-success" @click="resumeTask(task)"
+                      :title="$t('resume') || 'Resume'">
+                      <font-awesome-icon icon="fa-solid fa-play" class="h-3 w-3" />
+                    </button>
                     <button class="btn btn-xs btn-info" @click="retry(task)" :disabled="!canRetry(task)"
                       :title="retryTooltip(task)">{{
                         $t('retry') }}</button>
@@ -375,6 +383,24 @@ export default {
         })
     },
 
+    async pauseTask(task) {
+      try {
+        await request({ method: 'post', url: '/api/task/pause', data: { task_id: task.id } });
+        task._paused = true;
+        await this.$emiter('NOTIFY', { type: 'warning', message: `Task #${task.id} paused`, timeout: 2000 });
+      } catch (e) {
+        console.error('Pause failed', e);
+      }
+    },
+    async resumeTask(task) {
+      try {
+        await request({ method: 'post', url: '/api/task/resume', data: { task_id: task.id } });
+        task._paused = false;
+        await this.$emiter('NOTIFY', { type: 'success', message: `Task #${task.id} resumed`, timeout: 2000 });
+      } catch (e) {
+        console.error('Resume failed', e);
+      }
+    },
     async showLogs(task) {
       this.logsTaskId = task.id;
       this.taskLogs = [];

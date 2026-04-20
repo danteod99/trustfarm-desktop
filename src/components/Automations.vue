@@ -185,6 +185,33 @@
       </div>
     </div>
 
+    <!-- Spotify -->
+    <div v-else-if="activePlatform === 'spotify'">
+      <div class="mb-2">
+        <div class="text-xs font-bold text-base-content/50 uppercase mb-1 px-1">Account</div>
+        <div class="grid grid-cols-2 gap-1">
+          <button class="btn btn-sm btn-primary" @click="adb('shell', 'am', 'start', '-n', 'com.spotify.music/com.spotify.music.MainActivity')">
+            <font-awesome-icon icon="fa-brands fa-spotify" class="h-3 w-3" /> Open
+          </button>
+          <button class="btn btn-sm btn-outline" @click="adb('shell', 'pm', 'clear', 'com.spotify.music')">
+            <font-awesome-icon icon="fa-solid fa-sign-out-alt" class="h-3 w-3" /> Logout
+          </button>
+        </div>
+      </div>
+      <div class="divider my-1"></div>
+      <div class="mb-2">
+        <div class="text-xs font-bold text-base-content/50 uppercase mb-1 px-1">Listen</div>
+        <div class="grid grid-cols-2 gap-1">
+          <button class="btn btn-sm btn-accent btn-outline" @click="runScript('accountWarmup')">
+            <font-awesome-icon icon="fa-solid fa-music" class="h-3 w-3" /> Warmup (Listen)
+          </button>
+          <button class="btn btn-sm btn-outline" @click="runScript('followBack')">
+            <font-awesome-icon icon="fa-solid fa-user-plus" class="h-3 w-3" /> Follow Artists
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Pipeline Builder (always visible below scripts) -->
     <div class="divider my-2"></div>
     <div class="mb-2">
@@ -313,6 +340,7 @@ export default {
         { id: 'tiktok', label: 'TikTok', icon: 'fa-brands fa-tiktok' },
         { id: 'instagram', label: 'IG', icon: 'fa-brands fa-instagram' },
         { id: 'facebook', label: 'FB', icon: 'fa-brands fa-facebook' },
+        { id: 'spotify', label: 'Spotify', icon: 'fa-brands fa-spotify' },
       ],
       pipelines: [],
       creatingPipeline: false,

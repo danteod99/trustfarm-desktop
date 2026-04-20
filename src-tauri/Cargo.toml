@@ -1,6 +1,6 @@
 [package]
 name = "TrustFarm"
-version = "2.13.0"
+version = "2.14.0"
 description = "TrustFarm Device Farm Manager by trustmind.online"
 authors = ["trustmind"]
 repository = ""

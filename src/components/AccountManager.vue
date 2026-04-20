@@ -152,6 +152,7 @@ export default {
         { id: 'instagram', label: 'Instagram', icon: 'fa-brands fa-instagram', package: 'com.instagram.android', activity: 'com.instagram.android/com.instagram.nux.activity.SignedOutFragmentActivity' },
         { id: 'facebook', label: 'Facebook', icon: 'fa-brands fa-facebook', package: 'com.facebook.katana', activity: 'com.facebook.katana/com.facebook.katana.LoginActivity' },
         { id: 'tiktok', label: 'TikTok', icon: 'fa-brands fa-tiktok', package: 'com.zhiliaoapp.musically', activity: 'com.zhiliaoapp.musically/com.ss.android.ugc.aweme.splash.SplashActivity' },
+        { id: 'spotify', label: 'Spotify', icon: 'fa-brands fa-spotify', package: 'com.spotify.music', activity: 'com.spotify.music/com.spotify.music.MainActivity' },
       ],
       manual: { username: '', password: '', twofa: '', email: '', emailPass: '' },
     }
@@ -169,6 +170,7 @@ export default {
         case 'instagram': return 'text-pink-500';
         case 'facebook': return 'text-blue-600';
         case 'tiktok': return 'text-black';
+        case 'spotify': return 'text-green-500';
         default: return '';
       }
     },
